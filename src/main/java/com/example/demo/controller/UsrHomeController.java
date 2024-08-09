@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.example.demo.vo.Article;
 
 @Controller
-public class UserHomeController {
+public class UsrHomeController {
 	
 	static int num;
 	static double dNum;
