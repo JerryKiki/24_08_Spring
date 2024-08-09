@@ -9,6 +9,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.example.demo.vo.Article;
+
 @Controller
 public class UserHomeController {
 	
@@ -140,32 +142,33 @@ public class UserHomeController {
 		return article;
 		//어래 내가 만든 클래스는 왜 안됨? ==> HttpMediaTypeNotAcceptableException
 		//==> 클래스 안에 getter를 만들어주니까 된다!
+		//==> @Data/@AllArgsConstructor/@NoArgsConstructor 붙여주기
 		//==> 맵처럼 객체모양 그대로가 나옴
 	}
 }
 
 //테스트용 클래스
-class Article {
-	
-	int id;
-	String title;
-	String body;
-	
-	public Article(int id, String title, String body) {
-		this.id = id;
-		this.title = title;
-		this.body = body;
-	}
-	
-	public int getId() {
-		return id;
-	}
-	
-	public String getTitle() {
-		return title;
-	}
-	
-	public String getBody() {
-		return body;
-	}
-}
+//class Article {
+//	
+//	int id;
+//	String title;
+//	String body;
+//	
+//	public Article(int id, String title, String body) {
+//		this.id = id;
+//		this.title = title;
+//		this.body = body;
+//	}
+//	
+//	public int getId() {
+//		return id;
+//	}
+//	
+//	public String getTitle() {
+//		return title;
+//	}
+//	
+//	public String getBody() {
+//		return body;
+//	}
+//}
