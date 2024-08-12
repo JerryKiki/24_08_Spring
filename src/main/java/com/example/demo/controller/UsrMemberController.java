@@ -22,22 +22,22 @@ public class UsrMemberController {
 		
 		int memberCheck = 0;
 		
-		if(Ut.isEmptyOrNull(loginId)) return ResultData.from("F-5", "필수 입력 사항을 모두 입력해주세요.", "아이디 미입력");
+		if(Ut.isEmptyOrNull(loginId)) return ResultData.from("F-5", "loginId를 입력해주세요.", "아이디 미입력");
 		else {
 			memberCheck = memberService.getMemberByLoginId(loginId);
-			if (memberCheck==-1) return ResultData.from("F-6", Ut.f("이미 사용중인 아이디(%s)입니다", loginId), "중복된 아이디");
+			if (memberCheck==-1) return ResultData.from("F-12", Ut.f("이미 사용중인 loginId(%s)입니다", loginId));
 			//"이미 사용중인 아이디입니다. (" + loginId + ")";
 		}
 		
-		if(Ut.isEmptyOrNull(loginPw)) return ResultData.from("F-5", "필수 입력 사항을 모두 입력해주세요.", "패스워드 미입력");
-		if(Ut.isEmptyOrNull(name)) return ResultData.from("F-5", "필수 입력 사항을 모두 입력해주세요.", "이름 미입력");
-		if(Ut.isEmptyOrNull(nickname)) return ResultData.from("F-5", "필수 입력 사항을 모두 입력해주세요.", "닉네임 미입력");
-		if(Ut.isEmptyOrNull(cellphoneNum)) return ResultData.from("F-5", "필수 입력 사항을 모두 입력해주세요.", "전화번호 미입력");
-		if(Ut.isEmptyOrNull(email)) return ResultData.from("F-5", "필수 입력 사항을 모두 입력해주세요.", "이메일 미입력");
-		if(!email.contains("@")) return ResultData.from("F-7", "올바른 이메일을 입력하세요.", "잘못된 이메일 형식:" + email);
+		if(Ut.isEmptyOrNull(loginPw)) return ResultData.from("F-6", "loginPw를 입력해주세요.");
+		if(Ut.isEmptyOrNull(name)) return ResultData.from("F-7", "name을 입력해주세요.");
+		if(Ut.isEmptyOrNull(nickname)) return ResultData.from("F-8", "nickname을 입력해주세요.");
+		if(Ut.isEmptyOrNull(cellphoneNum)) return ResultData.from("F-9", "cellphoneNum을 입력해주세요.");
+		if(Ut.isEmptyOrNull(email)) return ResultData.from("F-10", "email을 입력해주세요.");
+		if(!email.contains("@")) return ResultData.from("F-11", "올바른 email을 입력하세요.", email);
 		
 		memberCheck = memberService.getMemberByNameAndEmail(name, email);
-		if (memberCheck==-1) return ResultData.from("F-8", Ut.f("해당 이름(%s)과 이메일(%s)로 이미 가입된 내역이 있습니다.", name, email), "중복 가입");
+		if (memberCheck==-1) return ResultData.from("F-13", Ut.f("해당 이름(%s)과 이메일(%s)로 이미 가입된 내역이 있습니다.", name, email));
 		
 		int id = memberService.doJoin(loginId, loginPw, name, nickname, cellphoneNum, email);
 		Member member = memberService.getMemberById(id);

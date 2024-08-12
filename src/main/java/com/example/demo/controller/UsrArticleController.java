@@ -62,9 +62,9 @@ public class UsrArticleController {
 		return ResultData.from("S-3", Ut.f("%d번 게시글이 삭제되었습니다.", id), article);
 	}
 
-	@RequestMapping("/usr/article/doAdd")
+	@RequestMapping("/usr/article/doWrite")
 	@ResponseBody
-	public ResultData doAdd(String title, String body) {
+	public ResultData doWrite(String title, String body) {
 		
 		int insertedId = -1;
 		
