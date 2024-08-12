@@ -24,4 +24,6 @@ public interface MemberRepository {
 	
 	public Member getMemberByLoginId(String loginId);
 
+	public Member getMemberByNameAndEmail(String name, String email);
+
 }

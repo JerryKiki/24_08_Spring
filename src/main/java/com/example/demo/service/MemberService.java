@@ -25,8 +25,20 @@ public class MemberService {
 		return memberRepository.getMemberById(id);
 	}
 	
-	public Member getMemberByLoginId(String loginId) {
-		return memberRepository.getMemberByLoginId(loginId);
+	public int getMemberByLoginId(String loginId) {
+		
+		Member memberCheck = memberRepository.getMemberByLoginId(loginId);
+		if (memberCheck!=null) return -1;
+		
+		else return 0;
+	}
+	
+	public int getMemberByNameAndEmail(String name, String Email) {
+		
+		Member memberCheck = memberRepository.getMemberByNameAndEmail(name, Email);
+		if (memberCheck!=null) return -1;
+		
+		else return 0;
 	}
 
 }

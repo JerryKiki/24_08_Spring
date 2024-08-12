@@ -18,10 +18,13 @@ public class UsrMemberController {
 	@RequestMapping("/usr/member/doJoin")
 	@ResponseBody
 	public Object doJoin(String loginId, String loginPw, String name, String nickname, String cellphoneNum, String email) {
+		
+		int memberCheck = 0;
+		
 		if(Ut.isEmptyOrNull(loginId)) return "아이디를 입력하세요.";
 		else {
-			Member memberCheck = memberService.getMemberByLoginId(loginId);
-			if (memberCheck!=null) return "이미 사용중인 아이디입니다.";
+			memberCheck = memberService.getMemberByLoginId(loginId);
+			if (memberCheck==-1) return "이미 사용중인 아이디입니다.";
 		}
 		
 		if(Ut.isEmptyOrNull(loginPw)) return "비밀번호를 입력하세요.";
@@ -30,6 +33,9 @@ public class UsrMemberController {
 		if(Ut.isEmptyOrNull(cellphoneNum)) return "전화번호를 입력하세요.";
 		if(Ut.isEmptyOrNull(email)) return "이메일을 입력하세요.";
 		if(!email.contains("@")) return "올바른 이메일을 입력하세요.";
+		
+		memberCheck = memberService.getMemberByNameAndEmail(name, email);
+		if (memberCheck==-1) return "해당 이름과 이메일로 이미 가입된 내역이 있습니다.";
 		
 		int id = memberService.doJoin(loginId, loginPw, name, nickname, cellphoneNum, email);
 		Member member = memberService.getMemberById(id);
