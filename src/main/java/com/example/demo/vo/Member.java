@@ -7,15 +7,15 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Article {
+public class Member {
 
 	private int id;
 	private String regDate;
 	private String updateDate;
-	private String title;
-	private String body;
+	private String loginId;
+	private String name;
+	private String nickname;
+	private String cellphoneNum;
+	private String email;
+
 }
-	
-//	public String toString() {
-//		return "<br>" + "id = " + id + "<br>" + "title = " + title + "<br>" + "body = " + body;
-//	}
