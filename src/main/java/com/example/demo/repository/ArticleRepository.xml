@@ -18,7 +18,8 @@
 		SET regDate = NOW(),
 		updateDate = NOW(),
 		title = #{title},
-		`body` = #{body}
+		`body` = #{body},
+		author = #{loginedMemberId}
 	</insert>
 
 	<select id="getArticles" resultType="Article">

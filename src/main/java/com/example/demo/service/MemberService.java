@@ -4,7 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.repository.MemberRepository;
+import com.example.demo.util.Ut;
+import com.example.demo.vo.LoginSession;
 import com.example.demo.vo.Member;
+import com.example.demo.vo.ResultData;
+
+import jakarta.servlet.http.HttpSession;
 
 @Service
 public class MemberService {
@@ -16,32 +21,79 @@ public class MemberService {
 		this.memberRepository = memberRepository;
 	}
 
-	public int doJoin(String loginId, String loginPw, String name, String nickname, String cellphoneNum, String email) {
+	public ResultData<Integer> doJoin(String loginId, String loginPw, String name, String nickname, String cellphoneNum,
+			String email) {
+
+		Member existsMember = getMemberByLoginId(loginId);
+
+		if (existsMember != null) {
+			return ResultData.from("F-7", Ut.f("이미 사용중인 아이디(%s)입니다.", loginId));
+		}
+
+		existsMember = getMemberByNameAndEmail(name, email);
+
+		if (existsMember != null) {
+			return ResultData.from("F-8", Ut.f("이미 사용중인 이름(%s)과 이메일(%s)입니다.", name, email));
+		}
+
 		memberRepository.doJoin(loginId, loginPw, name, nickname, cellphoneNum, email);
-		return memberRepository.getLastInsertId();
+
+		int id = memberRepository.getLastInsertId();
+
+		return ResultData.from("S-1", "회원가입 성공", id);
+	}
+	
+
+	private Member getMemberByNameAndEmail(String name, String email) {
+		return memberRepository.getMemberByNameAndEmail(name, email);
+	}
+
+	public Member getMemberByLoginId(String loginId) {
+		return memberRepository.getMemberByLoginId(loginId);
 	}
 
 	public Member getMemberById(int id) {
 		return memberRepository.getMemberById(id);
 	}
-	
-	public int getMemberByLoginId(String loginId) {
-		
-		Member memberCheck = memberRepository.getMemberByLoginId(loginId);
-		if (memberCheck!=null) return -1;
-		
-		else return 0;
-	}
-	
-	public int getMemberByNameAndEmail(String name, String Email) {
-		
-		Member memberCheck = memberRepository.getMemberByNameAndEmail(name, Email);
-		if (memberCheck!=null) return -1;
-		
-		else return 0;
-	}
 
 }
+
+//@Service
+//public class MemberService {
+//
+//	@Autowired
+//	private MemberRepository memberRepository;
+//
+//	public MemberService(MemberRepository memberRepository) {
+//		this.memberRepository = memberRepository;
+//	}
+//
+//	public int doJoin(String loginId, String loginPw, String name, String nickname, String cellphoneNum, String email) {
+//		memberRepository.doJoin(loginId, loginPw, name, nickname, cellphoneNum, email);
+//		return memberRepository.getLastInsertId();
+//	}
+//
+//	public Member getMemberById(int id) {
+//		return memberRepository.getMemberById(id);
+//	}
+//	
+//	public int getMemberByLoginId(String loginId) {
+//		
+//		Member memberCheck = memberRepository.getMemberByLoginId(loginId);
+//		if (memberCheck!=null) return -1;
+//		
+//		else return 0;
+//	}
+//	
+//	public int getMemberByNameAndEmail(String name, String Email) {
+//		
+//		Member memberCheck = memberRepository.getMemberByNameAndEmail(name, Email);
+//		if (memberCheck!=null) return -1;
+//		
+//		else return 0;
+//	}
+//
+//}
 
 //	@Autowired
 //	private ArticleRepository articleRepositoy;
@@ -124,3 +176,28 @@ public class MemberService {
 //			return String.format("%d번 글이 수정되었습니다.<br>", id) + "수정 결과 : " + updateInfo;
 //		}
 //	}
+
+//public ResultData<Integer> doLogin(HttpSession httpSession, String loginId, String loginPw) {
+//
+//if(httpSession.getAttribute("loginedMemberId") != null) {
+//	Member loginedMember = (Member) httpSession.getAttribute("Member");
+//	return ResultData.from("F-3", Ut.f("이미 로그인 되어 있습니다. (%s)", loginedMember.getLoginId()));
+//}
+//
+//Member existsMember = getMemberByLoginId(loginId);
+//
+//if (existsMember == null) {
+//	return ResultData.from("F-4", Ut.f("존재하지 않는 아이디(%s)입니다.", loginId));
+//}
+//
+//if(!existsMember.getLoginPw().equals(loginPw)) {
+//	return ResultData.from("F-5", "비밀번호가 틀립니다.");
+//}
+//
+//httpSession.setAttribute("loginedMemberId", existsMember.getId());
+//httpSession.setAttribute("Member", existsMember);
+////LoginSession.setLoginStatus(existsMember, existsMember.getId());
+//
+//return ResultData.from("S-1", Ut.f("%s님 로그인 성공!", existsMember.getNickname()), existsMember.getId());
+//}
+//
