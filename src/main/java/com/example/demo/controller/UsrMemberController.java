@@ -19,10 +19,75 @@ public class UsrMemberController {
 	@Autowired
 	private MemberService memberService;
 
+	@RequestMapping("/usr/member/doLogout")
+	@ResponseBody
+	public ResultData<Member> doLogout(HttpSession httpSession) {
+
+		boolean isLogined = false;
+
+		if (httpSession.getAttribute("loginedMemberId") != null) {
+			isLogined = true;
+		}
+
+		if (!isLogined) {
+			return ResultData.from("F-A", "이미 로그아웃 함");
+		}
+
+		httpSession.removeAttribute("loginedMemberId");
+
+		return ResultData.from("S-1", Ut.f("로그아웃 성공"));
+	}
+
+	@RequestMapping("/usr/member/doLogin")
+	@ResponseBody
+	public ResultData doLogin(HttpSession httpSession, String loginId, String loginPw) {
+
+		boolean isLogined = false;
+
+		if (httpSession.getAttribute("loginedMemberId") != null) {
+			isLogined = true;
+		}
+
+		if (isLogined) {
+			return ResultData.from("F-A", "이미 로그인 함");
+		}
+
+		if (Ut.isEmptyOrNull(loginId)) {
+			return ResultData.from("F-1", "loginId 입력 x");
+		}
+		if (Ut.isEmptyOrNull(loginPw)) {
+			return ResultData.from("F-2", "loginPw 입력 x");
+		}
+
+		Member member = memberService.getMemberByLoginId(loginId);
+
+		if (member == null) {
+			return ResultData.from("F-3", Ut.f("%s는(은) 존재 x", loginId));
+		}
+
+		if (member.getLoginPw().equals(loginPw) == false) {
+			return ResultData.from("F-4", Ut.f("비밀번호 틀림"));
+		}
+
+		httpSession.setAttribute("loginedMemberId", member.getId());
+
+		return ResultData.from("S-1", Ut.f("%s님 환영합니다", member.getNickname()), "로그인 한 회원", member);
+	}
+
 	@RequestMapping("/usr/member/doJoin")
 	@ResponseBody
-	public ResultData<Member> doJoin(String loginId, String loginPw, String name, String nickname, String cellphoneNum,
-			String email) {
+	public ResultData<Member> doJoin(HttpSession httpSession, String loginId, String loginPw, String name,
+			String nickname, String cellphoneNum, String email) {
+
+		boolean isLogined = false;
+
+		if (httpSession.getAttribute("loginedMemberId") != null) {
+			isLogined = true;
+		}
+
+		if (isLogined) {
+			return ResultData.from("F-A", "이미 로그인 함");
+		}
 
 		if (Ut.isEmptyOrNull(loginId)) {
 			return ResultData.from("F-1", "loginId 입력 x");
@@ -51,61 +116,103 @@ public class UsrMemberController {
 
 		Member member = memberService.getMemberById((int) doJoinRd.getData1());
 
-		return ResultData.newData(doJoinRd, "가입자 정보", member);
+		return ResultData.newData(doJoinRd, "새로 생성된 member", member);
 	}
-	
-	@RequestMapping("/usr/member/doLogin")
-	@ResponseBody
-	public ResultData<Member> doLogin(HttpSession httpSession, String loginId, String loginPw) {
-		
-		if(httpSession.getAttribute("loginedMemberId") != null) {
-			Member loginedMember = (Member) httpSession.getAttribute("loginedMember");
-			return ResultData.from("F-1", Ut.f("이미 로그인 되어 있습니다. (%s)", loginedMember.getLoginId()), "로그인 정보", loginedMember);
-		}
-		
-		if (Ut.isEmptyOrNull(loginId)) {
-			return ResultData.from("F-2", "loginId 입력 X");
-		}
-		if (Ut.isEmptyOrNull(loginPw)) {
-			return ResultData.from("F-3", "loginPw 입력 x");
-		}
-		
-		Member existsMember = memberService.getMemberByLoginId(loginId);
-		
-		if (existsMember == null) {
-			return ResultData.from("F-4", Ut.f("존재하지 않는 아이디(%s)입니다.", loginId));
-		}
-		
-		if(!existsMember.getLoginPw().equals(loginPw)) {
-			return ResultData.from("F-5", "비밀번호가 틀립니다.");
-		}
-		
-		httpSession.setAttribute("loginedMemberId", existsMember.getId());
-		httpSession.setAttribute("loginedMember", existsMember);
-//		LoginSession.setLoginStatus(existsMember, existsMember.getId());
-		
-		return ResultData.from("S-1", Ut.f("%s님 로그인 성공!", existsMember.getNickname()), "로그인 정보", existsMember);
-		
-	}
-	
-	@RequestMapping("/usr/member/doLogout")
-	@ResponseBody
-	public ResultData doLogout(HttpSession httpSession) {
-		
-		if(httpSession.getAttribute("loginedMemberId") == null) {
-			return ResultData.from("F-1", "이미 로그아웃 상태입니다.");
-		}
-		
-		int loginedMemberId = (int) httpSession.getAttribute("loginedMemberId");
-		Member loginedMember = memberService.getMemberById(loginedMemberId);
-		
-		httpSession.removeAttribute("loginedMemberId");
-		httpSession.removeAttribute("loginedMember");
-		
-		return ResultData.from("S-1", Ut.f("%s님 로그아웃 성공", loginedMember.getNickname()));
-	}
-
 }
+
+//@Controller
+//public class UsrMemberController {
+//
+//	@Autowired
+//	private MemberService memberService;
+//
+//	@RequestMapping("/usr/member/doJoin")
+//	@ResponseBody
+//	public ResultData<Member> doJoin(String loginId, String loginPw, String name, String nickname, String cellphoneNum,
+//			String email) {
+//
+//		if (Ut.isEmptyOrNull(loginId)) {
+//			return ResultData.from("F-1", "loginId 입력 x");
+//		}
+//		if (Ut.isEmptyOrNull(loginPw)) {
+//			return ResultData.from("F-2", "loginPw 입력 x");
+//		}
+//		if (Ut.isEmptyOrNull(name)) {
+//			return ResultData.from("F-3", "name 입력 x");
+//		}
+//		if (Ut.isEmptyOrNull(nickname)) {
+//			return ResultData.from("F-4", "nickname 입력 x");
+//		}
+//		if (Ut.isEmptyOrNull(cellphoneNum)) {
+//			return ResultData.from("F-5", "cellphoneNum 입력 x");
+//		}
+//		if (Ut.isEmptyOrNull(email)) {
+//			return ResultData.from("F-6", "email 입력 x");
+//		}
+//
+//		ResultData doJoinRd = memberService.doJoin(loginId, loginPw, name, nickname, cellphoneNum, email);
+//
+//		if (doJoinRd.isFail()) {
+//			return doJoinRd;
+//		}
+//
+//		Member member = memberService.getMemberById((int) doJoinRd.getData1());
+//
+//		return ResultData.newData(doJoinRd, "가입자 정보", member);
+//	}
+//	
+//	@RequestMapping("/usr/member/doLogin")
+//	@ResponseBody
+//	public ResultData<Member> doLogin(HttpSession httpSession, String loginId, String loginPw) {
+//		
+//		if(httpSession.getAttribute("loginedMemberId") != null) {
+//			Member loginedMember = (Member) httpSession.getAttribute("loginedMember");
+//			return ResultData.from("F-1", Ut.f("이미 로그인 되어 있습니다. (%s)", loginedMember.getLoginId()), "로그인 정보", loginedMember);
+//		}
+//		
+//		if (Ut.isEmptyOrNull(loginId)) {
+//			return ResultData.from("F-2", "loginId 입력 X");
+//		}
+//		if (Ut.isEmptyOrNull(loginPw)) {
+//			return ResultData.from("F-3", "loginPw 입력 x");
+//		}
+//		
+//		Member existsMember = memberService.getMemberByLoginId(loginId);
+//		
+//		if (existsMember == null) {
+//			return ResultData.from("F-4", Ut.f("존재하지 않는 아이디(%s)입니다.", loginId));
+//		}
+//		
+//		if(!existsMember.getLoginPw().equals(loginPw)) {
+//			return ResultData.from("F-5", "비밀번호가 틀립니다.");
+//		}
+//		
+//		httpSession.setAttribute("loginedMemberId", existsMember.getId());
+//		httpSession.setAttribute("loginedMember", existsMember);
+////		LoginSession.setLoginStatus(existsMember, existsMember.getId());
+//		
+//		return ResultData.from("S-1", Ut.f("%s님 로그인 성공!", existsMember.getNickname()), "로그인 정보", existsMember);
+//		
+//	}
+//	
+//	@RequestMapping("/usr/member/doLogout")
+//	@ResponseBody
+//	public ResultData doLogout(HttpSession httpSession) {
+//		
+//		if(httpSession.getAttribute("loginedMemberId") == null) {
+//			return ResultData.from("F-1", "이미 로그아웃 상태입니다.");
+//		}
+//		
+//		int loginedMemberId = (int) httpSession.getAttribute("loginedMemberId");
+//		Member loginedMember = memberService.getMemberById(loginedMemberId);
+//		
+//		httpSession.removeAttribute("loginedMemberId");
+//		httpSession.removeAttribute("loginedMember");
+//		
+//		return ResultData.from("S-1", Ut.f("%s님 로그아웃 성공", loginedMember.getNickname()));
+//	}
+//
+//}
 
 
 //@Controller

@@ -1,10 +1,21 @@
 package com.example.demo.controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 public class UsrHomeController {
 	
+	@RequestMapping("/usr/home/main")
+	public String showMain() {
+		return "/usr/home/main"; //"WEB-INF/jsp/usr/home/main.jsp"에서 prefix, suffix 생략(yml에 설정)
+	}
+	
+	//이건 리스폰스바디가 없어야됨
+	@RequestMapping("/")
+	public String showRoot() {
+		return "redirect:/usr/home/main";
+	}
 	
 }
 	

@@ -19,7 +19,7 @@
 		updateDate = NOW(),
 		title = #{title},
 		`body` = #{body},
-		author = #{loginedMember}
+		author = #{loginedMemberId}
 	</insert>
 
 	<select id="getArticles" resultType="Article">

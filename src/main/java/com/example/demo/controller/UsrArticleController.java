@@ -4,12 +4,15 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.demo.service.ArticleService;
+import com.example.demo.service.MemberService;
 import com.example.demo.util.Ut;
 import com.example.demo.vo.Article;
+import com.example.demo.vo.Member;
 import com.example.demo.vo.ResultData;
 
 import jakarta.servlet.http.HttpSession;
@@ -19,48 +22,72 @@ public class UsrArticleController {
 
 	@Autowired
 	private ArticleService articleService;
+	@Autowired
+	private MemberService memberService;
 
 	@RequestMapping("/usr/article/getArticle")
-	@ResponseBody
-	public ResultData<Article> getArticle(int id) {
+	public String getArticle(int id, Model model) {
+		
+		boolean noArticle = false;
 
 		Article article = articleService.getArticleById(id);
 
 		if (article == null) {
-			return ResultData.from("F-1", Ut.f("%d번 게시글은 없습니다.", id));
-
+			noArticle = true;
+			model.addAttribute("noArticle", noArticle);
+			return "/usr/alert";
 		}
-
-		return ResultData.from("S-1", Ut.f("%d번 게시글 입니다", id), "조회된 게시글", article);
+		
+		model.addAttribute("article", article);
+		return "/usr/article/detail";
 	}
 
 	// 로그인 체크 -> 유무 체크 -> 권한 체크 -> 수정
 	@RequestMapping("/usr/article/doModify")
-	@ResponseBody
-	public ResultData<Article> doModify(HttpSession httpSession, int id, String title, String body) {
+	public String doModify(HttpSession httpSession, Model model, int id, String title, String body) {
 		
-		if (httpSession.getAttribute("loginedMemberId") == null) {
-			return ResultData.from("F-A", "로그인 후에만 이용할 수 있습니다.");
-		}
-
-		Article article = articleService.getArticleById(id);
-
-		if (article == null) {
-			return ResultData.from("F-1", Ut.f("%d번 게시글은 없습니다", id));
-		}
+		boolean isntLogined = false;
+		boolean noArticle = false;
+		boolean cannotModify = false;
+		boolean articleModified = false;
 		
-		if((int) httpSession.getAttribute("loginedMemberId") != article.getAuthor()) {
-			return ResultData.from("F-2", Ut.f("%d번 게시글에 대한 수정 권한이 없습니다", id), "수정 시도된 게시글", article);
-		}
+		if(title == null && body == null) {
+			
+			if (httpSession.getAttribute("loginedMemberId") == null) {
+				isntLogined = true;
+				model.addAttribute("isntLogined", isntLogined);
+				return "/usr/alert";
+			}
+	
+			Article Oldarticle = articleService.getArticleById(id);
+	
+			if (Oldarticle == null) {
+				noArticle = true;
+				model.addAttribute("noArticle", noArticle);
+				model.addAttribute("id", id);
+				return "/usr/alert";
+			}
+			
+			if((int) httpSession.getAttribute("loginedMemberId") != Oldarticle.getAuthor()) {
+				cannotModify = true;
+				model.addAttribute("cannotModify", cannotModify);
+				model.addAttribute("id", id);
+				return "/usr/alert";
+			}
+			
+			model.addAttribute("Oldarticle", Oldarticle);
+			return "/usr/article/modify";
 
-		articleService.modifyArticle(id, title, body);
+		} else {
+			
+			articleService.modifyArticle(id, title, body);
 
-		article = articleService.getArticleById(id);
-
-		return ResultData.from("S-1", Ut.f("%d번 게시글을 수정했습니다", id), "수정된 게시글", article);
+			articleModified = true;
+			model.addAttribute("articleModified", articleModified);
+			return "/usr/alert";
+		}		
 	}
 
-	// 로그인 체크 -> 유무 체크 -> 권한 체크 -> 수정
 	@RequestMapping("/usr/article/doDelete")
 	@ResponseBody
 	public ResultData<Article> doDelete(HttpSession httpSession, int id) {
@@ -110,13 +137,29 @@ public class UsrArticleController {
 
 		return ResultData.newData(writeArticleRd, "작성된 게시글", article);
 	}
-
+	
+	//Spring model 객체 찾아보기
 	@RequestMapping("/usr/article/getArticles")
-	@ResponseBody
-	public ResultData<List<Article>> getArticles() {
+	public String getArticles(HttpSession httpSession, Model model) {
 		List<Article> articles = articleService.getArticles();
-		return ResultData.from("S-1", "Article List", "게시글 목록", articles);
+		if(httpSession.getAttribute("loginedMemberId") != null) {
+			int loginedMemberId = (int) httpSession.getAttribute("loginedMemberId");
+			Member loginedMember = memberService.getMemberById(loginedMemberId);
+			model.addAttribute("isLogined", true);
+			model.addAttribute("loginedMember", loginedMember);
+		}
+		model.addAttribute("articles", articles);
+		return "/usr/article/list";
 	}
+
+//	@RequestMapping("/usr/article/getArticles")
+//	@ResponseBody
+//	public ResultData<List<Article>> getArticles() {
+//		List<Article> articles = articleService.getArticles();
+//		return ResultData.from("S-1", "Article List", "게시글 목록", articles);
+//	}
+	
+
 
 }
 
