@@ -19,19 +19,22 @@
 		updateDate = NOW(),
 		title = #{title},
 		`body` = #{body},
-		author = #{loginedMemberId}
+		author = #{loginedMember}
 	</insert>
 
 	<select id="getArticles" resultType="Article">
-		SELECT *
-		FROM article
-		ORDER BY
-		id DESC
+		SELECT A.*, M.nickname
+		FROM article A
+		INNER JOIN `member` M
+		ON A.author = M.id
+		ORDER BY A.id DESC;
 	</select>
 
 	<select id="getArticleById" resultType="Article">
-		SELECT *
-		FROM article
-		WHERE id = #{id}
+		SELECT A.*, M.nickname
+		FROM article A
+		INNER JOIN `member` M
+		ON A.author = M.id
+		WHERE A.id = #{id}
 	</select>
 </mapper>

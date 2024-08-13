@@ -15,6 +15,7 @@ public class Article {
 	private String title;
 	private String body;
 	private int author;
+	private String nickname;
 }
 	
 //	public String toString() {

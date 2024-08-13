@@ -31,9 +31,10 @@ public class UsrArticleController {
 
 		}
 
-		return ResultData.from("S-1", Ut.f("%d번 게시글 입니다", id), article);
+		return ResultData.from("S-1", Ut.f("%d번 게시글 입니다", id), "조회된 게시글", article);
 	}
 
+	// 로그인 체크 -> 유무 체크 -> 권한 체크 -> 수정
 	@RequestMapping("/usr/article/doModify")
 	@ResponseBody
 	public ResultData<Article> doModify(HttpSession httpSession, int id, String title, String body) {
@@ -49,16 +50,17 @@ public class UsrArticleController {
 		}
 		
 		if((int) httpSession.getAttribute("loginedMemberId") != article.getAuthor()) {
-			return ResultData.from("F-2", Ut.f("%d번 게시글에 대한 수정 권한이 없습니다", id), article);
+			return ResultData.from("F-2", Ut.f("%d번 게시글에 대한 수정 권한이 없습니다", id), "수정 시도된 게시글", article);
 		}
 
 		articleService.modifyArticle(id, title, body);
 
 		article = articleService.getArticleById(id);
 
-		return ResultData.from("S-1", Ut.f("%d번 게시글을 수정했습니다", id), article);
+		return ResultData.from("S-1", Ut.f("%d번 게시글을 수정했습니다", id), "수정된 게시글", article);
 	}
 
+	// 로그인 체크 -> 유무 체크 -> 권한 체크 -> 수정
 	@RequestMapping("/usr/article/doDelete")
 	@ResponseBody
 	public ResultData<Article> doDelete(HttpSession httpSession, int id) {
@@ -74,12 +76,12 @@ public class UsrArticleController {
 		}
 		
 		if((int) httpSession.getAttribute("loginedMemberId") != article.getAuthor()) {
-			return ResultData.from("F-2", Ut.f("%d번 게시글에 대한 삭제 권한이 없습니다", id), article);
+			return ResultData.from("F-2", Ut.f("%d번 게시글에 대한 삭제 권한이 없습니다", id), "삭제 시도된 게시글", article);
 		}
 
 		articleService.deleteArticle(id);
 
-		return ResultData.from("S-1", Ut.f("%d번 게시글을 삭제했습니다", id), article);
+		return ResultData.from("S-1", Ut.f("%d번 게시글을 삭제했습니다", id), "삭제된 게시글", article);
 	}
 
 	@RequestMapping("/usr/article/doWrite")
@@ -106,14 +108,14 @@ public class UsrArticleController {
 
 		Article article = articleService.getArticleById(id);
 
-		return ResultData.newData(writeArticleRd, article);
+		return ResultData.newData(writeArticleRd, "작성된 게시글", article);
 	}
 
 	@RequestMapping("/usr/article/getArticles")
 	@ResponseBody
 	public ResultData<List<Article>> getArticles() {
 		List<Article> articles = articleService.getArticles();
-		return ResultData.from("S-1", "Article List", articles);
+		return ResultData.from("S-1", "Article List", "게시글 목록", articles);
 	}
 
 }

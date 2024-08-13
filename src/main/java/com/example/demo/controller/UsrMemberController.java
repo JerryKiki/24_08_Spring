@@ -51,7 +51,7 @@ public class UsrMemberController {
 
 		Member member = memberService.getMemberById((int) doJoinRd.getData1());
 
-		return ResultData.newData(doJoinRd, member);
+		return ResultData.newData(doJoinRd, "가입자 정보", member);
 	}
 	
 	@RequestMapping("/usr/member/doLogin")
@@ -60,7 +60,7 @@ public class UsrMemberController {
 		
 		if(httpSession.getAttribute("loginedMemberId") != null) {
 			Member loginedMember = (Member) httpSession.getAttribute("loginedMember");
-			return ResultData.from("F-1", Ut.f("이미 로그인 되어 있습니다. (%s)", loginedMember.getLoginId()), loginedMember);
+			return ResultData.from("F-1", Ut.f("이미 로그인 되어 있습니다. (%s)", loginedMember.getLoginId()), "로그인 정보", loginedMember);
 		}
 		
 		if (Ut.isEmptyOrNull(loginId)) {
@@ -84,7 +84,7 @@ public class UsrMemberController {
 		httpSession.setAttribute("loginedMember", existsMember);
 //		LoginSession.setLoginStatus(existsMember, existsMember.getId());
 		
-		return ResultData.from("S-1", Ut.f("%s님 로그인 성공!", existsMember.getNickname()), existsMember);
+		return ResultData.from("S-1", Ut.f("%s님 로그인 성공!", existsMember.getNickname()), "로그인 정보", existsMember);
 		
 	}
 	
