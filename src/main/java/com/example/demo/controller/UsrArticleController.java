@@ -26,7 +26,7 @@ public class UsrArticleController {
 	private MemberService memberService;
 
 	@RequestMapping("/usr/article/getArticle")
-	public String getArticle(int id, Model model) {
+	public String getArticle(int id, HttpSession httpSession, Model model) {
 		
 		boolean noArticle = false;
 
@@ -36,6 +36,10 @@ public class UsrArticleController {
 			noArticle = true;
 			model.addAttribute("noArticle", noArticle);
 			return "/usr/alert";
+		}
+		
+		if(httpSession.getAttribute("loginedMemberId") != null) {
+			model = setLoginInfoBySessionId(httpSession, model, article);
 		}
 		
 		model.addAttribute("article", article);
@@ -48,7 +52,7 @@ public class UsrArticleController {
 		
 		boolean isntLogined = false;
 		boolean noArticle = false;
-		boolean cannotModify = false;
+		boolean cannotAccess = false;
 		boolean articleModified = false;
 		
 		if(title == null && body == null) {
@@ -64,17 +68,18 @@ public class UsrArticleController {
 			if (Oldarticle == null) {
 				noArticle = true;
 				model.addAttribute("noArticle", noArticle);
-				model.addAttribute("id", id);
+				//model.addAttribute("id", id);
 				return "/usr/alert";
 			}
 			
 			if((int) httpSession.getAttribute("loginedMemberId") != Oldarticle.getAuthor()) {
-				cannotModify = true;
-				model.addAttribute("cannotModify", cannotModify);
-				model.addAttribute("id", id);
+				cannotAccess = true;
+				model.addAttribute("cannotAccess", cannotAccess);
+				//model.addAttribute("id", id);
 				return "/usr/alert";
 			}
 			
+			model = setLoginInfoBySessionId(httpSession, model);
 			model.addAttribute("Oldarticle", Oldarticle);
 			return "/usr/article/modify";
 
@@ -89,26 +94,40 @@ public class UsrArticleController {
 	}
 
 	@RequestMapping("/usr/article/doDelete")
-	@ResponseBody
-	public ResultData<Article> doDelete(HttpSession httpSession, int id) {
+	public String doDelete(HttpSession httpSession, Model model, int id) {
+		
+		boolean isntLogined = false;
+		boolean noArticle = false;
+		boolean cannotAccess = false;
+		boolean articleDeleted = false;
 		
 		if (httpSession.getAttribute("loginedMemberId") == null) {
-			return ResultData.from("F-A", "로그인 후에만 이용할 수 있습니다.");
+			isntLogined = true;
+			model.addAttribute("isntLogined", isntLogined);
+			return "/usr/alert";
 		}
 
 		Article article = articleService.getArticleById(id);
 
 		if (article == null) {
-			return ResultData.from("F-1", Ut.f("%d번 게시글은 없습니다", id));
+			noArticle = true;
+			model.addAttribute("noArticle", noArticle);
+			//model.addAttribute("id", id);
+			return "/usr/alert";
 		}
 		
 		if((int) httpSession.getAttribute("loginedMemberId") != article.getAuthor()) {
-			return ResultData.from("F-2", Ut.f("%d번 게시글에 대한 삭제 권한이 없습니다", id), "삭제 시도된 게시글", article);
+			cannotAccess = true;
+			model.addAttribute("cannotAccess", cannotAccess);
+			//model.addAttribute("id", id);
+			return "/usr/alert";
 		}
 
 		articleService.deleteArticle(id);
 
-		return ResultData.from("S-1", Ut.f("%d번 게시글을 삭제했습니다", id), "삭제된 게시글", article);
+		articleDeleted = true;
+		model.addAttribute("articleDeleted", articleDeleted);
+		return "/usr/alert";
 	}
 
 	@RequestMapping("/usr/article/doWrite")
@@ -143,13 +162,32 @@ public class UsrArticleController {
 	public String getArticles(HttpSession httpSession, Model model) {
 		List<Article> articles = articleService.getArticles();
 		if(httpSession.getAttribute("loginedMemberId") != null) {
-			int loginedMemberId = (int) httpSession.getAttribute("loginedMemberId");
-			Member loginedMember = memberService.getMemberById(loginedMemberId);
-			model.addAttribute("isLogined", true);
-			model.addAttribute("loginedMember", loginedMember);
+			model = setLoginInfoBySessionId(httpSession, model);
 		}
 		model.addAttribute("articles", articles);
 		return "/usr/article/list";
+	}
+	
+	public Model setLoginInfoBySessionId(HttpSession httpSession, Model model) {
+		int loginedMemberId = (int) httpSession.getAttribute("loginedMemberId");
+		Member loginedMember = memberService.getMemberById(loginedMemberId);
+		model.addAttribute("isLogined", true);
+		model.addAttribute("loginedMember", loginedMember);
+		
+		return model;
+	}
+	
+	public Model setLoginInfoBySessionId(HttpSession httpSession, Model model, Article article) {
+		int loginedMemberId = (int) httpSession.getAttribute("loginedMemberId");
+		Member loginedMember = memberService.getMemberById(loginedMemberId);
+		model.addAttribute("isLogined", true);
+		model.addAttribute("loginedMember", loginedMember);
+		
+		if(article.getAuthor() == loginedMemberId) {
+			model.addAttribute("canAccess", true);
+		}
+		
+		return model;
 	}
 
 //	@RequestMapping("/usr/article/getArticles")

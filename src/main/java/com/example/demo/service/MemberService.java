@@ -2,9 +2,11 @@ package com.example.demo.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 
 import com.example.demo.repository.MemberRepository;
 import com.example.demo.util.Ut;
+import com.example.demo.vo.Article;
 import com.example.demo.vo.LoginSession;
 import com.example.demo.vo.Member;
 import com.example.demo.vo.ResultData;
@@ -42,7 +44,6 @@ public class MemberService {
 
 		return ResultData.from("S-1", "회원가입 성공", "가입된 회원 번호", id);
 	}
-	
 
 	private Member getMemberByNameAndEmail(String name, String email) {
 		return memberRepository.getMemberByNameAndEmail(name, email);

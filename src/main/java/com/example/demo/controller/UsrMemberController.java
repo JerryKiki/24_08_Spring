@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -20,58 +21,63 @@ public class UsrMemberController {
 	private MemberService memberService;
 
 	@RequestMapping("/usr/member/doLogout")
-	@ResponseBody
-	public ResultData<Member> doLogout(HttpSession httpSession) {
+	public String doLogout(HttpSession httpSession, Model model) {
 
-		boolean isLogined = false;
+		boolean alreadyLogouted = false;
+		boolean logoutSuccess = false;
 
-		if (httpSession.getAttribute("loginedMemberId") != null) {
-			isLogined = true;
-		}
-
-		if (!isLogined) {
-			return ResultData.from("F-A", "이미 로그아웃 함");
+		if (httpSession.getAttribute("loginedMemberId") == null) {
+			alreadyLogouted = true;
+			model.addAttribute("alreadyLogouted", alreadyLogouted);
+			return "/usr/alert";
 		}
 
 		httpSession.removeAttribute("loginedMemberId");
+		
+		logoutSuccess = true;
+		model.addAttribute("logoutSuccess", logoutSuccess);
 
-		return ResultData.from("S-1", Ut.f("로그아웃 성공"));
+		return "/usr/alert";
 	}
 
 	@RequestMapping("/usr/member/doLogin")
-	@ResponseBody
-	public ResultData doLogin(HttpSession httpSession, String loginId, String loginPw) {
+	public String doLogin(HttpSession httpSession, Model model, String loginId, String loginPw) {
 
-		boolean isLogined = false;
+		boolean alreadyLogined = false;
+		boolean memberNotExists = false;
+		boolean pwMismatch = false;
+		boolean loginSuccess = false;
 
 		if (httpSession.getAttribute("loginedMemberId") != null) {
-			isLogined = true;
+			alreadyLogined = true;
+			model.addAttribute("alreadyLogined", alreadyLogined);
+			return "/usr/alert";
 		}
-
-		if (isLogined) {
-			return ResultData.from("F-A", "이미 로그인 함");
-		}
-
-		if (Ut.isEmptyOrNull(loginId)) {
-			return ResultData.from("F-1", "loginId 입력 x");
-		}
-		if (Ut.isEmptyOrNull(loginPw)) {
-			return ResultData.from("F-2", "loginPw 입력 x");
+		
+		if(loginId == null && loginPw == null) {
+			return "/usr/member/login";
 		}
 
 		Member member = memberService.getMemberByLoginId(loginId);
 
 		if (member == null) {
-			return ResultData.from("F-3", Ut.f("%s는(은) 존재 x", loginId));
+			memberNotExists = true;
+			model.addAttribute("memberNotExists", memberNotExists);
+			return "/usr/alert";
 		}
 
 		if (member.getLoginPw().equals(loginPw) == false) {
-			return ResultData.from("F-4", Ut.f("비밀번호 틀림"));
+			pwMismatch = true;
+			model.addAttribute("pwMismatch", pwMismatch);
+			return "/usr/alert";
 		}
 
 		httpSession.setAttribute("loginedMemberId", member.getId());
+		
+		loginSuccess = true;
+		model.addAttribute("loginSuccess", loginSuccess);
 
-		return ResultData.from("S-1", Ut.f("%s님 환영합니다", member.getNickname()), "로그인 한 회원", member);
+		return "/usr/alert";
 	}
 
 	@RequestMapping("/usr/member/doJoin")

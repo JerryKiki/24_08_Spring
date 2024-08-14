@@ -1,34 +1,19 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<c:set var="pageTitle" value="LIST"></c:set>
+<%@ include file="../common/head.jspf"%>
 
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<link rel="stylesheet" href="/resource/common.css" />
-<title>ARTICLE LIST</title>
-</head>
-<body>
-	
-	<c:if test="${isLogined }">
-	<div class="memberInfo">
-		<div>로그인 정보</div>
-		<div>아이디 : ${loginedMember.loginId }</div>
-		<div>닉네임 : ${loginedMember.nickname }</div>
-	</div>
-	</c:if>
-
-	<div style="font-size: 3rem; font-weight: bold; margin: 10px; margin-bottom:20px; color: #FF4E88">LIST</div>
-
-	<hr />
-
-	<table border="1" cellspacing="0" cellpadding="5" style="width: 70%; border-collapse: collapse; border-color: #36BA98;">
+	<table class="table-fixed border-collapse w-3/4 border-2" style="border-color: #36BA98;">
 		<thead>
 			<tr>
 				<th style="text-align: center;">ID</th>
 				<th style="text-align: center;">Registration Date</th>
 				<th style="text-align: center;">Title</th>
 				<th style="text-align: center;">Author</th>
+				<c:if test="${isLogined }">
+					<th style="text-align: center;">Modify</th>
+					<th style="text-align: center;">Delete</th>
+				</c:if>
 			</tr>
 		</thead>
 		<tbody>
@@ -36,26 +21,29 @@
 				<tr>
 					<td style="text-align: center;">${article.id}</td>
 					<td style="text-align: center;">${article.regDate.substring(0,10)}</td>
-					<td style="text-align: center;"><a href="http://localhost:8080/usr/article/getArticle?id=${article.id}">${article.title}</a></td>
+					<td style="text-align: center;"><a href="getArticle?id=${article.id}">${article.title}</a></td>
 					<td style="text-align: center;">${article.nickname}</td>
+					<c:if test="${isLogined }">
+						<td style="text-align: center"><a href="doModify?id=${article.id}">수정</a></td>
+						<td style="text-align: center"><a href="doDelete?id=${article.id}">삭제</a></td>
+					</c:if>
 				</tr>
 			</c:forEach>
 		</tbody>
 	</table>
-</body>
-</html>
 
 	<!-- CSS -->
 	
 	<style type="text/css">
-	
 	td, th {
 		font-family: 'Pretendard-Regular';
+		border: 2px solid #36BA98;
 		color: black;
 		padding: 5px;
 	}
-	
 	</style>
+	
+<%@ include file="../common/foot.jspf"%>
 	
 	
 	

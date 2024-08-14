@@ -1,13 +1,31 @@
 package com.example.demo.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.example.demo.service.MemberService;
+import com.example.demo.vo.Member;
+
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class UsrHomeController {
 	
+	@Autowired
+	private MemberService memberService;
+	
 	@RequestMapping("/usr/home/main")
-	public String showMain() {
+	public String showMain(HttpSession httpSession, Model model) {
+		
+		if(httpSession.getAttribute("loginedMemberId") != null) {
+			int loginedMemberId = (int) httpSession.getAttribute("loginedMemberId");
+			Member loginedMember = memberService.getMemberById(loginedMemberId);
+			model.addAttribute("isLogined", true);
+			model.addAttribute("loginedMember", loginedMember);
+		}
+		
 		return "/usr/home/main"; //"WEB-INF/jsp/usr/home/main.jsp"에서 prefix, suffix 생략(yml에 설정)
 	}
 	

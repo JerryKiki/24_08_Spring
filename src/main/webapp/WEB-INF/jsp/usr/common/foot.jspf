@@ -1,0 +1,12 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+
+
+	<c:if test="${isLogined }">
+		<div class="memberInfo">
+			<div>로그인 정보 : ${loginedMember.nickname }님(ID:${loginedMember.loginId })</div>
+		</div>
+	</c:if>
+
+</body>
+</html>

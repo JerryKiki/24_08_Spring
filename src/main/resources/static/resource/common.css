@@ -24,7 +24,7 @@ html {
 	background-color: white;
 }
 	
-body {
+html>body {
 	font-family: 'MaplestoryOTFBold';
 	margin: 0;
 	padding: 20px;
@@ -41,6 +41,10 @@ body {
 	box-sizing: border-box;
 }
 
+html>body>header {
+	color: #FF4E88;
+}
+
 a {
 	color: #FF8C9E;
 	text-decoration: none;
@@ -50,3 +54,16 @@ a:hover {
 	color: #FF4E88;
 	text-decoration: underline;
 }
+
+hr {
+    background:pink;
+    height:10px;
+    border:0;
+}
+
+.memberInfo {
+	margin-top: 20px;
+	margin-left:auto;
+	text-align: right;
+}
+

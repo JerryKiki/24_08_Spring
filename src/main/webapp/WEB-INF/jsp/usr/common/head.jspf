@@ -1,0 +1,41 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>${pageTitle }</title>
+<link rel="stylesheet" href="/resource/common.css" />
+<script src="/resource/common.js" defer="defer"></script>
+<!-- 제이쿼리 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+<!-- 폰트어썸 -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<!-- 폰트어썸 FREE 아이콘 리스트 : https://fontawesome.com/v5.15/icons?d=gallery&p=2&m=free -->
+
+<!-- 테일윈드 -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.1.4/tailwind.min.css">
+<!-- 테일윈드 치트시트 : https://nerdcave.com/tailwind-cheat-sheet -->
+</head>
+<body>
+	<header class="w-full">
+		<div class="flex h-20 mx-auto items-center justify-between text-3xl p-8">
+			<div><a href="/">LOGO</a></div>
+			<ul class="flex justify-between w-4/12">
+				<li><a class="hover:underline" href="/">HOME</a></li>
+				<li><a class="hover:underline" href="../article/getArticles">LIST</a></li>
+				<c:if test="${!isLogined }">
+					<li><a class="hover:underline" href="../member/doLogin">LOGIN</a></li>
+				</c:if>
+				<c:if test="${isLogined }">
+					<li><a class="hover:underline" href="../member/doLogout">LOGOUT</a></li>
+				</c:if>
+			</ul>
+		</div>
+	</header>
+	
+	<hr style="border:2px solid #36BA98; height: 2px !important; display: block !important; width: 100% !important;"/>
+
+	<div style="font-size: 3rem; font-weight: bold; margin: 10px; margin:20px; color: #FF4E88">${pageTitle }</div>
