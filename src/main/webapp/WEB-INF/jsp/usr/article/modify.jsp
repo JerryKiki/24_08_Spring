@@ -16,7 +16,7 @@
 		<input type="text" name="body"/>
 		</div>
 		<div>
-			<input style="cursor: pointer; background-color:#36BA98; color: white; padding: 2px; margin-top: 20px; border-radius: 10px;" type="submit" value="수정 완료">
+			<input style="cursor: pointer; background-color:#36BA98; color: white; padding: 5px 10px; margin-top: 20px; border-radius: 10px;" type="submit" value="수정 완료">
 		</div>
 	</form>
 	

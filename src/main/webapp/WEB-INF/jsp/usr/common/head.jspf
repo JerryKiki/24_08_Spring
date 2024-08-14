@@ -23,7 +23,7 @@
 	<header class="w-full">
 		<div class="flex h-20 mx-auto items-center justify-between text-3xl p-8">
 			<div><a href="/">LOGO</a></div>
-			<ul class="flex justify-between w-4/12">
+			<ul class="flex justify-between w-5/12">
 				<li><a class="hover:underline" href="/">HOME</a></li>
 				<li><a class="hover:underline" href="../article/getArticles">LIST</a></li>
 				<c:if test="${!isLogined }">
@@ -32,6 +32,7 @@
 				<c:if test="${isLogined }">
 					<li><a class="hover:underline" href="../member/doLogout">LOGOUT</a></li>
 				</c:if>
+				<li><a class="hover:underline" href="../member/doJoin">JOIN</a></li>
 			</ul>
 		</div>
 	</header>

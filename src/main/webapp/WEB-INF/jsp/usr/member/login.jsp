@@ -13,7 +13,7 @@
 		<input type="password" autocomplete="off" name="loginPw"/>
 		</div>
 		<div>
-			<input style="cursor: pointer; background-color:#36BA98; color: white; padding: 2px; margin-top: 20px; border-radius: 10px;" type="submit" value="로그인">
+			<input style="cursor: pointer; background-color:#36BA98; color: white; padding: 5px 20px; margin-top: 20px; border-radius: 10px;" type="submit" value="로그인">
 		</div>
 	</form>
 	

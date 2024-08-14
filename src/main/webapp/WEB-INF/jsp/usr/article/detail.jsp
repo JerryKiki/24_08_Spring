@@ -16,7 +16,7 @@
 	<c:if test="${canAccess }">
 		<ul class="menu flex mx-auto justify-between" style="font-size: 1.2rem;">
 			<li><a href="doModify?id=${article.id }">수정</a></li>
-			<li><a href="doModify?id=${article.id }">삭제</a></li>
+			<li><a href="doDelete?id=${article.id }">삭제</a></li>
 		</ul>
 	</c:if>
 	
@@ -31,7 +31,7 @@
 	<style type="text/css">
 	
 	.menu > li {
-		padding: 0 10px;
+		padding: 5px 15px;
 		margin: 0 10px;
 		background-color: #36BA98;
 		color: white;

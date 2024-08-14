@@ -10,7 +10,7 @@
 </head>
 <body>
 	<c:if test="${isntLogined}">
-		<script>alert('로그인 후에만 이용할 수 있습니다.'); history.back();</script>
+		<script>alert('로그인 후에만 이용할 수 있습니다.'); location.replace('../member/doLogin');</script>
 	</c:if>
 	<c:if test="${noArticle}">
 		<script>alert('유효하지 않은 게시글 번호입니다.'); history.back();</script>
@@ -24,8 +24,11 @@
 	<c:if test="${articleDeleted}">
 		<script>alert('게시글 삭제가 완료되었습니다.'); location.replace('getArticles');</script>
 	</c:if>
+	<c:if test="${writeSuccess}">
+		<script>alert('게시글이 작성되었습니다.'); location.replace('getArticles');</script>
+	</c:if>
 	<c:if test="${alreadyLogined}">
-		<script>alert('이미 로그인되어 있습니다.'); location.replace('getArticles');</script>
+		<script>alert('이미 로그인되어 있습니다.'); history.back();</script>
 	</c:if>
 	<c:if test="${memberNotExists}">
 		<script>alert('존재하지 않는 아이디입니다.'); history.back();</script>
@@ -41,6 +44,15 @@
 	</c:if>
 	<c:if test="${logoutSuccess}">
 		<script>alert('로그아웃 성공!'); location.replace('/');</script>
+	</c:if>
+	<c:if test="${joinSuccess}">
+		<script>alert('회원가입 성공!'); location.replace('doLogin');</script>
+	</c:if>
+	<c:if test="${idDup}">
+		<script>alert('이미 사용중인 아이디입니다.'); history.back();</script>
+	</c:if>
+	<c:if test="${memberDup}">
+		<script>alert('이미 가입된 이름과 이메일입니다.'); history.back();</script>
 	</c:if>
 </body>
 </html>

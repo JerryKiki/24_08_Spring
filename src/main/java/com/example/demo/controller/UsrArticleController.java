@@ -129,21 +129,22 @@ public class UsrArticleController {
 		model.addAttribute("articleDeleted", articleDeleted);
 		return "/usr/alert";
 	}
-
-	@RequestMapping("/usr/article/doWrite")
-	@ResponseBody
-	public ResultData<Article> doWrite(HttpSession httpSession, String title, String body) {
+	
+	@RequestMapping("usr/article/doWrite")
+	public String doWrite(HttpSession httpSession, Model model, String title, String body) {
+		
+		boolean isntLogined = false;
+		boolean writeSuccess = false;
 		
 		if (httpSession.getAttribute("loginedMemberId") == null) {
-			return ResultData.from("F-A", "로그인 후에만 이용할 수 있습니다.");
-		}
-
-		if (Ut.isEmptyOrNull(title)) {
-			return ResultData.from("F-1", "제목을 입력해주세요");
+			isntLogined = true;
+			model.addAttribute("isntLogined", isntLogined);
+			return "/usr/alert";
 		}
 		
-		if (Ut.isEmptyOrNull(body)) {
-			return ResultData.from("F-2", "내용을 입력해주세요");
+		if (title==null || body==null) {
+			model = setLoginInfoBySessionId(httpSession, model);
+			return "/usr/article/write";
 		}
 		
 		int loginedMemberId = (int) httpSession.getAttribute("loginedMemberId");
@@ -153,8 +154,10 @@ public class UsrArticleController {
 		int id = (int) writeArticleRd.getData1();
 
 		Article article = articleService.getArticleById(id);
-
-		return ResultData.newData(writeArticleRd, "작성된 게시글", article);
+		
+		writeSuccess = true;
+		model.addAttribute("writeSuccess", writeSuccess);
+		return "/usr/alert";
 	}
 	
 	//Spring model 객체 찾아보기

@@ -81,48 +81,43 @@ public class UsrMemberController {
 	}
 
 	@RequestMapping("/usr/member/doJoin")
-	@ResponseBody
-	public ResultData<Member> doJoin(HttpSession httpSession, String loginId, String loginPw, String name,
+	public String doJoin(HttpSession httpSession, Model model, String loginId, String loginPw, String name,
 			String nickname, String cellphoneNum, String email) {
 
-		boolean isLogined = false;
+		boolean alreadyLogined = false;
+		boolean idDup = false;
+		boolean memberDup = false;
+		boolean joinSuccess = false;
 
 		if (httpSession.getAttribute("loginedMemberId") != null) {
-			isLogined = true;
+			alreadyLogined = true;
+			model.addAttribute("alreadyLogined", alreadyLogined);
+			return "/usr/alert";
 		}
 
-		if (isLogined) {
-			return ResultData.from("F-A", "이미 로그인 함");
+		if(loginId == null) {
+			return "/usr/member/join";
 		}
-
-		if (Ut.isEmptyOrNull(loginId)) {
-			return ResultData.from("F-1", "loginId 입력 x");
-		}
-		if (Ut.isEmptyOrNull(loginPw)) {
-			return ResultData.from("F-2", "loginPw 입력 x");
-		}
-		if (Ut.isEmptyOrNull(name)) {
-			return ResultData.from("F-3", "name 입력 x");
-		}
-		if (Ut.isEmptyOrNull(nickname)) {
-			return ResultData.from("F-4", "nickname 입력 x");
-		}
-		if (Ut.isEmptyOrNull(cellphoneNum)) {
-			return ResultData.from("F-5", "cellphoneNum 입력 x");
-		}
-		if (Ut.isEmptyOrNull(email)) {
-			return ResultData.from("F-6", "email 입력 x");
-		}
-
+		
 		ResultData doJoinRd = memberService.doJoin(loginId, loginPw, name, nickname, cellphoneNum, email);
-
-		if (doJoinRd.isFail()) {
-			return doJoinRd;
+		
+		if(doJoinRd.getResultCode().equals("F-7")) {
+			idDup = true;
+			model.addAttribute("idDup", idDup);
+			return "/usr/alert";
+		}
+		
+		if(doJoinRd.getResultCode().equals("F-8")) {
+			memberDup = true;
+			model.addAttribute("memberDup", memberDup);
+			return "/usr/alert";
 		}
 
-		Member member = memberService.getMemberById((int) doJoinRd.getData1());
-
-		return ResultData.newData(doJoinRd, "새로 생성된 member", member);
+		//Member member = memberService.getMemberById((int) doJoinRd.getData1());
+		
+		joinSuccess = true;
+		model.addAttribute("joinSuccess", joinSuccess);
+		return "/usr/alert";
 	}
 }
 

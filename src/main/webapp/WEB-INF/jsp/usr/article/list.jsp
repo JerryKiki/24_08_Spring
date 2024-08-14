@@ -31,6 +31,8 @@
 			</c:forEach>
 		</tbody>
 	</table>
+	
+	<div><button onclick="location.replace('doWrite');">게시글 작성</button></div>
 
 	<!-- CSS -->
 	
@@ -40,6 +42,15 @@
 		border: 2px solid #36BA98;
 		color: black;
 		padding: 5px;
+	}
+	
+	button {
+		font-size: 1.2rem;
+		background-color: #36BA98;
+		color: white;
+		margin-top: 20px;
+		padding: 10px;
+		border-radius: 10px;
 	}
 	</style>
 	
