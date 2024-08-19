@@ -19,7 +19,8 @@
 		updateDate = NOW(),
 		title = #{title},
 		`body` = #{body},
-		author = #{loginedMemberId}
+		author = #{loginedMemberId},
+		boardId = #{boardId}
 	</insert>
 
 	<select id="getArticles" resultType="Article">
@@ -27,6 +28,7 @@
 		FROM article A
 		INNER JOIN `member` M
 		ON A.author = M.id
+		<if test="boardId != -1">WHERE A.boardId = #{boardId}</if>
 		ORDER BY A.id DESC;
 	</select>
 
@@ -36,5 +38,15 @@
 		INNER JOIN `member` M
 		ON A.author = M.id
 		WHERE A.id = #{id}
+	</select>
+	
+	<select id="getArticlesByPage">
+		SELECT A.*, M.nickname
+		FROM article A
+		INNER JOIN `member` M
+		ON A.author = M.id
+		<if test="boardId != -1">WHERE boardId = #{boardId}</if>
+		ORDER BY id DESC 
+		LIMIT ${limitFrom}, ${limitTake}
 	</select>
 </mapper>

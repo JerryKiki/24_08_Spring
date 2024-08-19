@@ -11,7 +11,7 @@ import com.example.demo.vo.Article;
 public interface ArticleRepository {
 	
 //	@Insert("INSERT INTO article SET regDate = NOW(), updateDate = NOW(), title = #{title}, `body` = #{body}")
-	public void writeArticle(int loginedMemberId, String title, String body);
+	public void writeArticle(int loginedMemberId, String title, String body, int boardId);
 
 	@Delete("DELETE FROM article WHERE id = #{id}")
 	public void deleteArticle(int id);
@@ -23,10 +23,13 @@ public interface ArticleRepository {
 	public Article getArticleById(int id);
 
 //	@Select("SELECT * FROM article ORDER BY id DESC")
-	public List<Article> getArticles();
+	public List<Article> getArticles(int boardId);
 
 	@Select("SELECT LAST_INSERT_ID();")
 	public int getLastInsertId();
+
+//	@Select("SELECT * FROM article WHERE boardId = #{boardId} ORDER BY id DESC LIMIT ${limitFrom}, ${limitTake}")
+	public List<Article> getArticlesByPage(int boardId, int limitFrom, int limitTake);
 }
 	
 //	@Insert("INSERT INTO article SET regDate = NOW(), updateDate = NOW(), title = #{title}, `body` = #{body}")

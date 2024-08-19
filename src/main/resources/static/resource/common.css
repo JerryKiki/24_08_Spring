@@ -67,3 +67,20 @@ hr {
 	text-align: right;
 }
 
+header .board_menu > ul {
+	display: none;
+	position: absolute;
+	background-color: #36BA98;
+	text-align: left;
+	border-radius: 10px;
+	padding: 5px 0;
+	font-size: 1.4rem;
+}
+
+header .board_menu > ul > li {
+	padding: 5px 15px;
+}
+
+header .board_menu:hover > ul {
+	display: block;
+}

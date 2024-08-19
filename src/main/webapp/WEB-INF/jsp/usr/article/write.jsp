@@ -4,13 +4,22 @@
 <%@ include file="../common/head.jspf"%>
 	
 	<form onsubmit="wirteForm__submit(this); return false;" style="font-size: 1.5rem;" action="doWrite">
+		<div>
+			<label>게시판 : </label>
+			<select name="boardId" id="board">
+				<option value="select">Select a board</option>
+				<option value="1">notice</option>
+				<option value="2">free</option>
+				<option value="3">QnA</option>
+			</select>
+		</div>
 		<div style="margin-bottom: 10px;">
 			<label>제목 : </label>
 			<input type="text" autocomplete="off" name="title"/>
 		</div>
 		<div>
-		<label>내용 : </label>
-		<input type="text" autocomplete="off" name="body"/>
+			<label>내용 : </label>
+			<input type="text" autocomplete="off" name="body"/>
 		</div>
 		<div>
 			<input style="cursor: pointer; background-color:#36BA98; color: white; padding: 5px 20px; margin-top: 20px; border-radius: 10px;" type="submit" value="작성">
@@ -33,11 +42,18 @@
 	<script type="text/javascript">
 	
 		function wirteForm__submit(form) {
+			console.log("form.boardId.value : " + form.boardId.value);
 			console.log("form.title.value : " + form.title.value);
 			console.log("form.body.value : " + form.body.value);
 			
 			let title = form.title.value.trim();
 			let body = form.body.value.trim();
+			let boardId = form.boardId.value;
+			
+			if(boardId == "select") {
+				alert('게시판을 선택하세요.');
+				return;
+			}
 
 			if(title.length == 0) {
 				alert('제목을 입력하세요.');

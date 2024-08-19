@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<c:set var="pageTitle" value="LIST"></c:set>
+<c:set var="pageTitle" value="${boardCode } LIST"></c:set>
 <%@ include file="../common/head.jspf"%>
 
 	<table class="table-fixed border-collapse w-3/4 border-2" style="border-color: #36BA98;">
@@ -17,6 +17,7 @@
 			</tr>
 		</thead>
 		<tbody>
+			<c:if test="${!noneArticle }">
 			<c:forEach var="article" items="${articles}">
 				<tr>
 					<td style="text-align: center;">${article.id}</td>
@@ -29,8 +30,30 @@
 					</c:if>
 				</tr>
 			</c:forEach>
+			</c:if>
+			<c:if test="${noneArticle }">
+				<tr style="text-align: center;">
+				<c:if test="${isLogined }">
+					<td colspan='6' style="text-align: center;">아직 아무런 게시글이 없습니다.</td>
+				</c:if>
+				<c:if test="${!isLogined }">
+					<td colspan='4' style="text-align: center;">아직 아무런 게시글이 없습니다.</td>
+				</c:if>
+				</tr>
+			</c:if>
 		</tbody>
 	</table>
+	
+	<c:if test="${!noneArticle }">
+		<div class = "page">
+			<c:forEach var="i" begin="${startNum }" end="${endNum }">
+					<a href="getArticles?page=${i }&boardId=${boardId}" <c:if test="${i } == ${pageNum }">class = "cPage"</c:if>>
+					${i }
+					</a>
+			</c:forEach>
+		</div>
+	</c:if>
+
 	
 	<div><button onclick="location.replace('doWrite');">게시글 작성</button></div>
 
@@ -51,6 +74,10 @@
 		margin-top: 20px;
 		padding: 10px;
 		border-radius: 10px;
+	}
+	
+	.cPage {
+		color: #36BA98;
 	}
 	</style>
 	

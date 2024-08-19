@@ -6,12 +6,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.demo.service.ArticleService;
+import com.example.demo.service.BoardService;
 import com.example.demo.service.MemberService;
 import com.example.demo.util.Ut;
 import com.example.demo.vo.Article;
+import com.example.demo.vo.Board;
 import com.example.demo.vo.Member;
 import com.example.demo.vo.ResultData;
 
@@ -24,6 +27,8 @@ public class UsrArticleController {
 	private ArticleService articleService;
 	@Autowired
 	private MemberService memberService;
+	@Autowired
+	private BoardService boardService;
 
 	@RequestMapping("/usr/article/getArticle")
 	public String getArticle(int id, HttpSession httpSession, Model model) {
@@ -131,7 +136,7 @@ public class UsrArticleController {
 	}
 	
 	@RequestMapping("usr/article/doWrite")
-	public String doWrite(HttpSession httpSession, Model model, String title, String body) {
+	public String doWrite(HttpSession httpSession, Model model, String title, String body, String boardId) {
 		
 		boolean isntLogined = false;
 		boolean writeSuccess = false;
@@ -148,8 +153,9 @@ public class UsrArticleController {
 		}
 		
 		int loginedMemberId = (int) httpSession.getAttribute("loginedMemberId");
+		int boardIdInt = Integer.parseInt(boardId);
 
-		ResultData writeArticleRd = articleService.writeArticle(loginedMemberId, title, body);
+		ResultData writeArticleRd = articleService.writeArticle(loginedMemberId, title, body, boardIdInt);
 
 		int id = (int) writeArticleRd.getData1();
 
@@ -161,13 +167,85 @@ public class UsrArticleController {
 	}
 	
 	//Spring model 객체 찾아보기
+	//인자 안들어왔을 때의 디폴트값 설정: 인자 앞에 @RequestParam(value="boardId", defaultValue = "-1")
 	@RequestMapping("/usr/article/getArticles")
-	public String getArticles(HttpSession httpSession, Model model) {
-		List<Article> articles = articleService.getArticles();
+	public String getArticles(HttpSession httpSession, Model model, String boardId, String page) {
+		//게시판 넘버 처리
+		int boardIdInt = -1;
+		if(boardId != null) {
+			boardIdInt = Integer.parseInt(boardId);
+		}
+		
+		//페이지네이션
+		int pageNum = 1;
+		if(page != null) {
+			pageNum = Integer.parseInt(page);
+		}
+		
+		int itemsInPage = 10;
+		int limitFrom = (pageNum - 1) * itemsInPage;
+		int limitTake = itemsInPage;
+		
+		//아티클 전체 가져와서 검사
+		List<Article> articles = articleService.getArticles(boardIdInt);
+		
+		if(boardIdInt != -1 && articles.isEmpty()) { 
+			//보드 가져와서 검사
+			Board board = boardService.getBoardById(boardIdInt);
+			
+			if(board != null) {//보드는 있는데 게시글이 없을 때
+				if(httpSession.getAttribute("loginedMemberId") != null) {
+					model = setLoginInfoBySessionId(httpSession, model);
+				}
+				model.addAttribute("boardCode", board.getCode());
+				model.addAttribute("noneArticle", true);
+				return "/usr/article/list";
+			} else {
+			//보드 자체가 없을 때
+			model.addAttribute("noneBoard", true);
+			return "usr/alert";
+			}
+		}
+		
+		//최대 페이지수 구하기
+		int totalCount = articles.size();
+		int maxPage = (int) Math.ceil(totalCount / (double)itemsInPage);
+		
+		//실제로 표시될 페이지 가져오기
+		List<Article> displayArticles = articleService.getArticlesByPage(boardIdInt, limitFrom, limitTake);
+		
+		//표시될 페이지 넘버들
+		int startNum = 1;
+		int endNum = pageNum + 9 <= maxPage ? 10 : maxPage;
+		
+		if(pageNum > 4 && maxPage > 10) {
+			startNum = pageNum - 4;
+			if(startNum + 9 <= maxPage) {
+				endNum = startNum + 9;
+			} else {
+				endNum = maxPage;
+			}
+		}
+		
+		//로그인한 멤버 정보
 		if(httpSession.getAttribute("loginedMemberId") != null) {
 			model = setLoginInfoBySessionId(httpSession, model);
 		}
-		model.addAttribute("articles", articles);
+		
+		
+		model.addAttribute("articles", displayArticles);
+		model.addAttribute("noneArticle", false);
+		if(boardIdInt != -1) {
+			Board board = boardService.getBoardById(boardIdInt);
+			model.addAttribute("boardCode", board.getCode());
+			model.addAttribute("boardId", board.getId());
+		} else {
+			model.addAttribute("boardCode", "All");
+		}
+		model.addAttribute("totalCount", totalCount);
+		model.addAttribute("pageNum", pageNum);
+		model.addAttribute("startNum", startNum);
+		model.addAttribute("endNum", endNum);
 		return "/usr/article/list";
 	}
 	
