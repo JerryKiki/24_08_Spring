@@ -41,11 +41,38 @@
 	</select>
 	
 	<select id="getArticlesByPage">
-		SELECT A.*, M.nickname
+		SELECT A.*, M.nickname, B.`code`
 		FROM article A
 		INNER JOIN `member` M
 		ON A.author = M.id
-		<if test="boardId != -1">WHERE boardId = #{boardId}</if>
+		INNER JOIN `board` B
+		ON A.boardId = B.id
+		<if test="boardId != -1">WHERE A.boardId = #{boardId}</if>
+		ORDER BY id DESC 
+		LIMIT ${limitFrom}, ${limitTake}
+	</select>
+	
+	<select id="getSearchedArticles">
+		SELECT A.*, M.nickname, B.`code`
+		FROM article A
+		INNER JOIN `member` M
+		ON A.author = M.id
+		INNER JOIN `board` B
+		ON A.boardId = B.id
+		WHERE ${searchItem} LIKE #{searchKeyword}
+		<if test="boardId != -1">AND A.boardId = #{boardId}</if>
+		ORDER BY id DESC
+	</select>
+	
+	<select id="getSearchedArticlesByPage">
+		SELECT A.*, M.nickname, B.`code`
+		FROM article A
+		INNER JOIN `member` M
+		ON A.author = M.id
+		INNER JOIN `board` B
+		ON A.boardId = B.id
+		WHERE ${searchItem} LIKE #{searchKeyword}
+		<if test="boardId != -1">AND A.boardId = #{boardId}</if>
 		ORDER BY id DESC 
 		LIMIT ${limitFrom}, ${limitTake}
 	</select>

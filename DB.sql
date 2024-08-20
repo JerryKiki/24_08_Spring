@@ -147,6 +147,8 @@ UPDATE article
 SET boardId = 3
 WHERE id = 4;
 
+ALTER TABLE article ADD COLUMN veiw INT(10) UNSIGNED NOT NULL DEFAULT 0;
+
 ###(INIT 끝)
 ##########################################
 SELECT *
@@ -168,5 +170,7 @@ FROM `member`;
 INSERT INTO article
 SET regDate = NOW(),
 updateDate = NOW(),
-title = CONCAT('제목__', RAND()),
-`body` = CONCAT('내용__', RAND());
+title = CONCAT('제목_', ROUND((RAND() * 100), 0)),
+`body` = CONCAT('내용_', ROUND((RAND() * 100), 0)),
+author = 2,
+boardId = 2;

@@ -14,7 +14,7 @@
 	<br />
 	
 	<c:if test="${canAccess }">
-		<ul class="menu flex mx-auto justify-between" style="font-size: 1.2rem;">
+		<ul class="can-access-menu flex items-center flex-row mx-auto" style="font-size: 1.2rem;">
 			<li><a href="doModify?id=${article.id }">수정</a></li>
 			<li><a href="doDelete?id=${article.id }">삭제</a></li>
 		</ul>
@@ -23,6 +23,7 @@
 	<br />
 	
 	<div><a href="getArticles">▶ 리스트로 돌아가기</a></div>
+	<div><a href="#" onclick="history.back();">▶ 뒤로가기</a></div>
 	
 <%@ include file="../common/foot.jspf"%>
 
@@ -30,12 +31,17 @@
 	
 	<style type="text/css">
 	
-	.menu > li {
-		padding: 5px 15px;
+	.can-access-menu > li {
+		display:inline-block;
 		margin: 0 10px;
 		background-color: #36BA98;
 		color: white;
 		border-radius: 10px;
+	}
+	
+	.can-access-menu > li > a {
+		display: block;
+		padding: 5px 10px;
 	}
 	
 	.details {

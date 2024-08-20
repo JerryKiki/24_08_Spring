@@ -169,10 +169,15 @@ public class UsrArticleController {
 	//Spring model 객체 찾아보기
 	//인자 안들어왔을 때의 디폴트값 설정: 인자 앞에 @RequestParam(value="boardId", defaultValue = "-1")
 	@RequestMapping("/usr/article/getArticles")
-	public String getArticles(HttpSession httpSession, Model model, String boardId, String page) {
+	public String getArticles(HttpSession httpSession, Model model, String boardId, String page, String searchItem, String searchKeyword) {
+		//검색여부 확인할 변수
+		boolean searched = false;
+		boolean gotBoardId = false;
+		
 		//게시판 넘버 처리
 		int boardIdInt = -1;
-		if(boardId != null) {
+		if(boardId != null && !boardId.equals("-1")) {
+			gotBoardId = true;
 			boardIdInt = Integer.parseInt(boardId);
 		}
 		
@@ -186,33 +191,57 @@ public class UsrArticleController {
 		int limitFrom = (pageNum - 1) * itemsInPage;
 		int limitTake = itemsInPage;
 		
-		//아티클 전체 가져와서 검사
-		List<Article> articles = articleService.getArticles(boardIdInt);
+		//아티클 불러오기
+		List<Article> articles;
+		if(searchItem != null && searchKeyword != null) {
+			searched = true;
+			articles = articleService.getSearchedArticles(boardIdInt, searchItem, "%" + searchKeyword + "%");
+		}
+		else {
+			articles = articleService.getArticles(boardIdInt);
+		}
 		
-		if(boardIdInt != -1 && articles.isEmpty()) { 
-			//보드 가져와서 검사
-			Board board = boardService.getBoardById(boardIdInt);
-			
-			if(board != null) {//보드는 있는데 게시글이 없을 때
+		//경우의 수 확인
+		Board board = null;
+		if(gotBoardId) { //보드를 지정했다면
+			board = boardService.getBoardById(boardIdInt); //보드 검사
+			if(board == null) {//보드 자체가 없다면,
+				model.addAttribute("noneBoard", true);
+				return "usr/alert";
+			} else if(board != null && articles.isEmpty()) { //보드는 있고 아티클은 없다면
 				if(httpSession.getAttribute("loginedMemberId") != null) {
-					model = setLoginInfoBySessionId(httpSession, model);
+						model = setLoginInfoBySessionId(httpSession, model);
 				}
 				model.addAttribute("boardCode", board.getCode());
 				model.addAttribute("noneArticle", true);
 				return "/usr/article/list";
-			} else {
-			//보드 자체가 없을 때
-			model.addAttribute("noneBoard", true);
-			return "usr/alert";
+			}
+		} else { //보드가 지정되지 않았다면
+			if(articles.isEmpty()) { //아티클만 검사
+				if(httpSession.getAttribute("loginedMemberId") != null) {
+					model = setLoginInfoBySessionId(httpSession, model);
+				}
+				model.addAttribute("boardCode", "All");
+				model.addAttribute("noneArticle", true);
+				return "/usr/article/list";
 			}
 		}
 		
+		//모든 검사를 통과했다면(==> 둘다 있다면) 아래로
 		//최대 페이지수 구하기
 		int totalCount = articles.size();
 		int maxPage = (int) Math.ceil(totalCount / (double)itemsInPage);
 		
 		//실제로 표시될 페이지 가져오기
-		List<Article> displayArticles = articleService.getArticlesByPage(boardIdInt, limitFrom, limitTake);
+		List<Article> displayArticles;
+		if(searched) {
+			displayArticles = articleService.getSearchedArticlesByPage(boardIdInt, limitFrom, limitTake, searchItem, "%" + searchKeyword + "%");
+			model.addAttribute("searched", searched);
+			model.addAttribute("searchItem", searchItem);
+			model.addAttribute("searchKeyword", searchKeyword);
+		} else {
+			displayArticles = articleService.getArticlesByPage(boardIdInt, limitFrom, limitTake);
+		}
 		
 		//표시될 페이지 넘버들
 		int startNum = 1;
@@ -236,11 +265,11 @@ public class UsrArticleController {
 		model.addAttribute("articles", displayArticles);
 		model.addAttribute("noneArticle", false);
 		if(boardIdInt != -1) {
-			Board board = boardService.getBoardById(boardIdInt);
 			model.addAttribute("boardCode", board.getCode());
 			model.addAttribute("boardId", board.getId());
 		} else {
 			model.addAttribute("boardCode", "All");
+			model.addAttribute("boardId", boardIdInt);
 		}
 		model.addAttribute("totalCount", totalCount);
 		model.addAttribute("pageNum", pageNum);

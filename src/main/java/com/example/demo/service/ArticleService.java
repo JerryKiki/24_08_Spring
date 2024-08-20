@@ -49,6 +49,14 @@ public class ArticleService {
 		return articleRepository.getArticlesByPage(boardId, limitFrom, limitTake);
 	}
 
+	public List<Article> getSearchedArticles(int boardId, String searchItem, String searchKeyword) {
+		return articleRepository.getSearchedArticles(boardId, searchItem, searchKeyword);
+	}
+	
+	public List<Article> getSearchedArticlesByPage(int boardId, int limitFrom, int limitTake, String searchItem, String searchKeyword) {
+		return articleRepository.getSearchedArticlesByPage(boardId,limitFrom, limitTake, searchItem, searchKeyword);
+	}
+
 }
 
 //@Service

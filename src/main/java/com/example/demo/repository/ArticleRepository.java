@@ -30,6 +30,10 @@ public interface ArticleRepository {
 
 //	@Select("SELECT * FROM article WHERE boardId = #{boardId} ORDER BY id DESC LIMIT ${limitFrom}, ${limitTake}")
 	public List<Article> getArticlesByPage(int boardId, int limitFrom, int limitTake);
+
+	public List<Article> getSearchedArticles(int boardId, String searchItem, String searchKeyword);
+	
+	public List<Article> getSearchedArticlesByPage(int boardId, int limitFrom, int limitTake, String searchItem, String searchKeyword);
 }
 	
 //	@Insert("INSERT INTO article SET regDate = NOW(), updateDate = NOW(), title = #{title}, `body` = #{body}")
