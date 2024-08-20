@@ -19,6 +19,7 @@ public class Article {
 	private int boardId;
 	private String code;
 	private int view;
+	private int like;
 }
 	
 //	public String toString() {

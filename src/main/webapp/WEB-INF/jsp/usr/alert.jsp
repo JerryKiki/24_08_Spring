@@ -57,5 +57,8 @@
 	<c:if test="${noneBoard}">
 		<script>alert('존재하지 않는 게시판입니다.'); history.back();</script>
 	</c:if>
+	<c:if test="${likeUpdated}">
+		<script>location.href = document.referrer;</script>
+	</c:if>
 </body>
 </html>

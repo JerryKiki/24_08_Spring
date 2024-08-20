@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <c:set var="pageTitle" value="${boardCode } LIST"></c:set>
 <%@ include file="../common/head.jspf"%>
 
@@ -17,9 +18,11 @@
 				<th style="text-align: center;">Title</th>
 				<th style="text-align: center;">Author</th>
 				<th style="text-align: center;">View</th>
+				<th style="text-align: center;">Liked</th>
 				<c:if test="${isLogined }">
 					<th style="text-align: center;">Modify</th>
 					<th style="text-align: center;">Delete</th>
+					<th style="text-align: center;">Like</th>
 				</c:if>
 			</tr>
 		</thead>
@@ -33,9 +36,14 @@
 					<td style="text-align: center;"><a href="getArticle?id=${article.id}">${article.title}</a></td>
 					<td style="text-align: center;">${article.nickname}</td>
 					<td style="text-align: center;">${article.view}</td>
+					<td style="text-align: center;">${article.like}</td>
 					<c:if test="${isLogined }">
 						<td style="text-align: center"><a href="doModify?id=${article.id}">수정</a></td>
 						<td style="text-align: center"><a href="doDelete?id=${article.id}">삭제</a></td>
+						<td style="text-align: center">
+							<c:if test="${fn:contains(likeInfo, article.id) }"><a href="doLike?id=${article.id}">♥</a></c:if>
+							<c:if test="${!fn:contains(likeInfo, article.id) }"><a href="doLike?id=${article.id}">♡</a></c:if>
+						</td>
 					</c:if>
 				</tr>
 			</c:forEach>
@@ -43,10 +51,10 @@
 			<c:if test="${noneArticle }">
 				<tr style="text-align: center;">
 				<c:if test="${isLogined }">
-					<td colspan='7' style="text-align: center;">아직 아무런 게시글이 없습니다.</td>
+					<td colspan='10' style="text-align: center;">아직 아무런 게시글이 없습니다.</td>
 				</c:if>
 				<c:if test="${!isLogined }">
-					<td colspan='5' style="text-align: center;">아직 아무런 게시글이 없습니다.</td>
+					<td colspan='7' style="text-align: center;">아직 아무런 게시글이 없습니다.</td>
 				</c:if>
 				</tr>
 			</c:if>
@@ -80,7 +88,7 @@
 		<form onsubmit="searchForm__submit(this); return false;" style="font-size: 1.4rem;" action="getArticles" class="flex justify-center items-center">
 		<input type="hidden" value="${boardId }" name="boardId" />
 		<div>
-			<select name="searchItem" id="column">
+			<select class="select select-bordered select-sm" name="searchItem" id="column">
 				<option value="select">Select</option>
 				<option value="title">title</option>
 				<option value="body">body</option>
@@ -88,10 +96,10 @@
 			</select>
 		</div>
 		<div>
-			<input type="text" autocomplete="off" name="searchKeyword" style="margin: 0 10px"/>
+			<input class="input input-bordered input-sm" type="text" autocomplete="off" name="searchKeyword" style="margin: 0 10px"/>
 		</div>
 		<div>
-			<input style="cursor: pointer; background-color:#36BA98; color: white; padding: 2px 10px; border-radius: 10px;" type="submit" value="검색">
+			<input style="cursor: pointer; background-color:#36BA98; color: white; padding: 2px 10px; border-radius: 10px; font-size:1.2rem;" type="submit" value="검색">
 		</div>
 		
 		</form>
@@ -145,12 +153,21 @@
 			//다 확인했으면 그냥 여기서 submit
 			form.submit();
 		}
-	
+		
 	</script>
 	
 <%@ include file="../common/foot.jspf"%>
 	
 	
+	
+<%-- // 		var likeInfo = <c:out value="${likeInfo}" escapeXml="false" />; --%>
+		
+<!-- // 		function compareId(likeInfo, articleId) { -->
+<!-- // 			let isFound = likeInfo.includes(articleId); -->
+<!-- // 			if(isFound) { -->
+<%-- // 				${this}.text("♥"); --%>
+<!-- // 			} -->
+<!-- // 		} -->
 	
 	
 <!-- 		<h3>기존 문법</h3> -->

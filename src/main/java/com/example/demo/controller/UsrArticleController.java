@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +12,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.demo.service.ArticleService;
 import com.example.demo.service.BoardService;
+import com.example.demo.service.LikeService;
 import com.example.demo.service.MemberService;
 import com.example.demo.util.Ut;
 import com.example.demo.vo.Article;
 import com.example.demo.vo.Board;
+import com.example.demo.vo.Likes;
 import com.example.demo.vo.Member;
 import com.example.demo.vo.ResultData;
 
@@ -29,6 +32,46 @@ public class UsrArticleController {
 	private MemberService memberService;
 	@Autowired
 	private BoardService boardService;
+	@Autowired
+	private LikeService likeService;
+	
+	@RequestMapping("/usr/article/doLike")
+	public String likeArtice(int id, HttpSession httpSession, Model model) {
+		
+		boolean isntLogined = false;
+		boolean noArticle = false;
+		
+		if(httpSession.getAttribute("loginedMemberId") == null) {
+			isntLogined = true;
+			model.addAttribute("isntLogined", isntLogined);
+			return "/usr/alert";
+		}
+		
+		Article article = articleService.getArticleById(id);
+		
+		if (article == null) {
+			noArticle = true;
+			model.addAttribute("noArticle", noArticle);
+			return "/usr/alert";
+		}
+		
+		//좋아요한 이력을 확인
+		int loginedMemberId = (int) httpSession.getAttribute("loginedMemberId");
+		boolean alreadyLiked = false;
+		List<Likes> likeHistory = likeService.getHistoryByUserId(loginedMemberId);
+		if(!likeHistory.isEmpty()) {
+			alreadyLiked = likeService.checkHistoryByArticleId(likeHistory, id);
+		}
+		
+
+		likeService.updateHistory(id, loginedMemberId, alreadyLiked);
+		articleService.updateArticleLike(id, alreadyLiked);
+		
+		model.addAttribute("likeUpdated", true);
+		
+		return "/usr/alert";
+		
+	}
 
 	@RequestMapping("/usr/article/getArticle")
 	public String getArticle(int id, HttpSession httpSession, Model model) {
@@ -285,17 +328,24 @@ public class UsrArticleController {
 	public Model setLoginInfoBySessionId(HttpSession httpSession, Model model) {
 		int loginedMemberId = (int) httpSession.getAttribute("loginedMemberId");
 		Member loginedMember = memberService.getMemberById(loginedMemberId);
+		
+		List<Likes> thisMemberLiked = likeService.getHistoryByUserId(loginedMemberId);
+		
+		List<Integer> thisMemberLikedArticlesId = new ArrayList<>();
+		for(Likes likes : thisMemberLiked) {
+			thisMemberLikedArticlesId.add(likes.getArticleId());
+		}
+		
 		model.addAttribute("isLogined", true);
 		model.addAttribute("loginedMember", loginedMember);
+		model.addAttribute("likeInfo", thisMemberLikedArticlesId);
 		
 		return model;
 	}
 	
 	public Model setLoginInfoBySessionId(HttpSession httpSession, Model model, Article article) {
 		int loginedMemberId = (int) httpSession.getAttribute("loginedMemberId");
-		Member loginedMember = memberService.getMemberById(loginedMemberId);
-		model.addAttribute("isLogined", true);
-		model.addAttribute("loginedMember", loginedMember);
+		model = setLoginInfoBySessionId(httpSession, model);
 		
 		if(article.getAuthor() == loginedMemberId) {
 			model.addAttribute("canAccess", true);

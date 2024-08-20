@@ -28,7 +28,7 @@
 	
 	<br />
 	
-	<div><button onclick="history.back();">▶ 뒤로가기</button></div>
+	<div><button onclick="location.href = document.referrer;">▶ 뒤로가기</button></div>
 	
 <%@ include file="../common/foot.jspf"%>
 

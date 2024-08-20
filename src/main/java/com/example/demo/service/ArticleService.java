@@ -61,6 +61,16 @@ public class ArticleService {
 		articleRepository.addView(id);
 	}
 
+	public void updateArticleLike(int articleId, boolean alreadyLiked) {
+		if(alreadyLiked) { //이미 좋아요 했다면 해제
+			//아티클의 좋아요 수 -1
+			articleRepository.minusLike(articleId);
+		} else { //좋아요 기록이 없다면 등록
+			//아티클의 좋아요 수 +1
+			articleRepository.addLike(articleId);
+		}
+	}
+
 }
 
 //@Service

@@ -39,6 +39,12 @@ public interface ArticleRepository {
 
 	@Update("UPDATE article SET `view` = `view` + 1 WHERE id=${id}")
 	public void addView(int id);
+
+	@Update("UPDATE article SET `like` = `like` + 1 WHERE id=${id}")
+	public void addLike(int id);
+
+	@Update("UPDATE article SET `like` = `like` - 1 WHERE id=${id}")
+	public void minusLike(int articleId);
 }
 	
 //	@Insert("INSERT INTO article SET regDate = NOW(), updateDate = NOW(), title = #{title}, `body` = #{body}")

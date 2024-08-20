@@ -23,7 +23,7 @@
 	<br />
 	
 	<div><a href="getArticles">▶ 리스트로 돌아가기</a></div>
-	<div><a href="#" onclick="history.back();">▶ 뒤로가기</a></div>
+	<div><a href="#" onclick="location.href = document.referrer;">▶ 뒤로가기</a></div>
 	
 <%@ include file="../common/foot.jspf"%>
 
