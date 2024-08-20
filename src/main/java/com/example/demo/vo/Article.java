@@ -18,6 +18,7 @@ public class Article {
 	private String nickname;
 	private int boardId;
 	private String code;
+	private int view;
 }
 	
 //	public String toString() {

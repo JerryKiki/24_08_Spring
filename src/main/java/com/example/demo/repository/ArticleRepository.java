@@ -5,6 +5,8 @@ import java.util.List;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
+
 import com.example.demo.vo.Article;
 
 @Mapper
@@ -34,6 +36,9 @@ public interface ArticleRepository {
 	public List<Article> getSearchedArticles(int boardId, String searchItem, String searchKeyword);
 	
 	public List<Article> getSearchedArticlesByPage(int boardId, int limitFrom, int limitTake, String searchItem, String searchKeyword);
+
+	@Update("UPDATE article SET `view` = `view` + 1 WHERE id=${id}")
+	public void addView(int id);
 }
 	
 //	@Insert("INSERT INTO article SET regDate = NOW(), updateDate = NOW(), title = #{title}, `body` = #{body}")

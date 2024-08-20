@@ -57,6 +57,10 @@ public class ArticleService {
 		return articleRepository.getSearchedArticlesByPage(boardId,limitFrom, limitTake, searchItem, searchKeyword);
 	}
 
+	public void addView(int id) {
+		articleRepository.addView(id);
+	}
+
 }
 
 //@Service

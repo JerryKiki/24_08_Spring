@@ -147,7 +147,7 @@ UPDATE article
 SET boardId = 3
 WHERE id = 4;
 
-ALTER TABLE article ADD COLUMN veiw INT(10) UNSIGNED NOT NULL DEFAULT 0;
+ALTER TABLE article ADD COLUMN `view` INT(10) UNSIGNED NOT NULL DEFAULT 0;
 
 ###(INIT 끝)
 ##########################################

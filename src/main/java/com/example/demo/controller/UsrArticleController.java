@@ -43,6 +43,10 @@ public class UsrArticleController {
 			return "/usr/alert";
 		}
 		
+		//조회수 증가
+		articleService.addView(id);
+		
+		
 		if(httpSession.getAttribute("loginedMemberId") != null) {
 			model = setLoginInfoBySessionId(httpSession, model, article);
 		}

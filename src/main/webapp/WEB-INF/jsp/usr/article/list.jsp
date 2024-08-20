@@ -16,6 +16,7 @@
 				<th style="text-align: center;">Board</th>
 				<th style="text-align: center;">Title</th>
 				<th style="text-align: center;">Author</th>
+				<th style="text-align: center;">View</th>
 				<c:if test="${isLogined }">
 					<th style="text-align: center;">Modify</th>
 					<th style="text-align: center;">Delete</th>
@@ -31,6 +32,7 @@
 					<td style="text-align: center;">${article.code }</td>
 					<td style="text-align: center;"><a href="getArticle?id=${article.id}">${article.title}</a></td>
 					<td style="text-align: center;">${article.nickname}</td>
+					<td style="text-align: center;">${article.view}</td>
 					<c:if test="${isLogined }">
 						<td style="text-align: center"><a href="doModify?id=${article.id}">수정</a></td>
 						<td style="text-align: center"><a href="doDelete?id=${article.id}">삭제</a></td>
