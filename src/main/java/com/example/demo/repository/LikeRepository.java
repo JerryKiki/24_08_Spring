@@ -13,9 +13,9 @@ import com.example.demo.vo.Likes;
 public interface LikeRepository {
 
 	@Select("SELECT * FROM likes WHERE memberId = #{loginedMemberId}")
-	List<Likes> getHistoryByMemberId(int loginedMemberId);
+	List<Likes> getArticleLikeHistoryByMemberId(int loginedMemberId);
 
-	@Delete("DELETE FROM likes WHERE relId = #{articleId} AND memberId = #{loginedMemberId}")
+	@Delete("DELETE FROM likes WHERE relTypeCode = 1 AND relId = #{articleId} AND memberId = #{loginedMemberId}")
 	void removeLikeHistoryOfArticle(int articleId, int loginedMemberId);
 
 	@Insert("INSERT INTO likes SET regDate = NOW(), relTypeCode = 1, relId = #{articleId}, memberId = #{loginedMemberId}")

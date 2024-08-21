@@ -15,7 +15,7 @@ public class LikeService {
 	private LikeRepository likeRepository;
 
 	public List<Likes> getHistoryByMemberId(int loginedMemberId) {
-		return likeRepository.getHistoryByMemberId(loginedMemberId);
+		return likeRepository.getArticleLikeHistoryByMemberId(loginedMemberId);
 	}
 
 	public boolean checkHistoryByArticleId(List<Likes> likeHistory, int ArticleId) {
