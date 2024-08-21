@@ -154,8 +154,9 @@ ALTER TABLE article ADD COLUMN `like` INT(10) UNSIGNED NOT NULL DEFAULT 0;
 CREATE TABLE `likes`(
 	id INT(10) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
 	regDate DATETIME NOT NULL,
-	userId INT(10) NOT NULL,
-	articleId INT(10) NOT NULL
+	memberId INT(10) NOT NULL,
+	relTypeCode INT(10) UNSIGNED NOT NULL COMMENT '대상 타입 (1=article, 2=reply)',
+	relId INT(10) NOT NULL
 );
 
 ###(INIT 끝)
@@ -173,8 +174,7 @@ SELECT *
 FROM `member`;
 
 SELECT *
-FROM likes
-WHERE userId = 4;
+FROM likes;
 
 
 ###############################################################################

@@ -14,13 +14,13 @@ public class LikeService {
 	@Autowired
 	private LikeRepository likeRepository;
 
-	public List<Likes> getHistoryByUserId(int loginedMemberId) {
-		return likeRepository.getHistoryByUserId(loginedMemberId);
+	public List<Likes> getHistoryByMemberId(int loginedMemberId) {
+		return likeRepository.getHistoryByMemberId(loginedMemberId);
 	}
 
 	public boolean checkHistoryByArticleId(List<Likes> likeHistory, int ArticleId) {
 		for(Likes likeRow : likeHistory) {
-			if(likeRow.getArticleId() == ArticleId) {
+			if(likeRow.getRelId() == ArticleId) {
 				return true;
 			}
 		}
@@ -30,10 +30,10 @@ public class LikeService {
 	public void updateHistory(int articleId, int loginedMemberId, boolean alreadyLiked) {
 		if(alreadyLiked) { //이미 좋아요 했다면 해제
 			//해당 유저의 해당 게시글에 대한 좋아요 기록 삭제
-			likeRepository.removeLikeHistory(articleId, loginedMemberId);
+			likeRepository.removeLikeHistoryOfArticle(articleId, loginedMemberId);
 		} else { //좋아요 기록이 없다면 등록
 			//해당 유저의 해당 게시글에 대한 좋아요 기록 추가
-			likeRepository.addLikeHistory(articleId, loginedMemberId);
+			likeRepository.addLikeHistoryOfArticle(articleId, loginedMemberId);
 		}
 	}
 

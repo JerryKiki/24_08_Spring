@@ -12,12 +12,12 @@ import com.example.demo.vo.Likes;
 @Mapper
 public interface LikeRepository {
 
-	@Select("SELECT * FROM likes WHERE userId = #{loginedMemberId}")
-	List<Likes> getHistoryByUserId(int loginedMemberId);
+	@Select("SELECT * FROM likes WHERE memberId = #{loginedMemberId}")
+	List<Likes> getHistoryByMemberId(int loginedMemberId);
 
-	@Delete("DELETE FROM likes WHERE articleId = #{articleId} AND userId = #{loginedMemberId}")
-	void removeLikeHistory(int articleId, int loginedMemberId);
+	@Delete("DELETE FROM likes WHERE relId = #{articleId} AND memberId = #{loginedMemberId}")
+	void removeLikeHistoryOfArticle(int articleId, int loginedMemberId);
 
-	@Insert("INSERT INTO likes SET regDate = NOW(), articleId = #{articleId}, userId = #{loginedMemberId}")
-	void addLikeHistory(int articleId, int loginedMemberId);
+	@Insert("INSERT INTO likes SET regDate = NOW(), relTypeCode = 1, relId = #{articleId}, memberId = #{loginedMemberId}")
+	void addLikeHistoryOfArticle(int articleId, int loginedMemberId);
 }

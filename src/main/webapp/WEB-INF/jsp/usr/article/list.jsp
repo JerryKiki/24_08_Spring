@@ -43,10 +43,10 @@
 						<td style="text-align: center">
 							<c:choose>
     							<c:when test="${likeInfo[article.id]}">
-        							<a href="doLike?id=${article.id}">♥</a>
+        							<a href="doLikeArticle?id=${article.id}">♥</a>
 							    </c:when>
 							    <c:otherwise>
-							        <a href="doLike?id=${article.id}">♡</a>
+							        <a href="doLikeArticle?id=${article.id}">♡</a>
 							    </c:otherwise>
 							</c:choose>
 						</td>

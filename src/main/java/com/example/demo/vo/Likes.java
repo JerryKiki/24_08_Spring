@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 public class Likes {
 	private int id;
 	private String regDate;
-	private int userId;
-	private int articleId;
+	private int memberId;
+	private int relTypeCode;
+	private int relId;
 }

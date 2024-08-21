@@ -36,7 +36,7 @@ public class UsrArticleController {
 	@Autowired
 	private LikeService likeService;
 	
-	@RequestMapping("/usr/article/doLike")
+	@RequestMapping("/usr/article/doLikeArticle")
 	public String likeArtice(int id, HttpSession httpSession, Model model) {
 		
 		boolean isntLogined = false;
@@ -68,7 +68,7 @@ public class UsrArticleController {
 		
 		//좋아요한 이력을 확인
 		boolean alreadyLiked = false;
-		List<Likes> likeHistory = likeService.getHistoryByUserId(loginedMemberId);
+		List<Likes> likeHistory = likeService.getHistoryByMemberId(loginedMemberId);
 		if(!likeHistory.isEmpty()) {
 			alreadyLiked = likeService.checkHistoryByArticleId(likeHistory, id);
 		}
@@ -97,7 +97,7 @@ public class UsrArticleController {
 		}
 		
 //		//조회수 증가
-//		articleService.addView(id);
+//		articleService.addView(id); //ajax 활용 위해 아래의 별도 메서드에서 실행되도록 바꿈
 		
 		
 		if(httpSession.getAttribute("loginedMemberId") != null) {
@@ -112,13 +112,13 @@ public class UsrArticleController {
 	@ResponseBody
 	public ResultData doIncreaseHitCount(int id) {
 
-		ResultData increaseHitCountRd = articleService.addView(id);
+		ResultData increaseViewCountRd = articleService.addView(id);
 
-		if (increaseHitCountRd.isFail()) {
-			return increaseHitCountRd;
+		if (increaseViewCountRd.isFail()) {
+			return increaseViewCountRd;
 		}
 
-		return ResultData.newData(increaseHitCountRd, "hitCount", articleService.getArticleViewCount(id));
+		return ResultData.newData(increaseViewCountRd, "hitCount", articleService.getArticleViewCount(id));
 	}
 
 	// 로그인 체크 -> 유무 체크 -> 권한 체크 -> 수정
@@ -353,11 +353,11 @@ public class UsrArticleController {
 		int loginedMemberId = (int) httpSession.getAttribute("loginedMemberId");
 		Member loginedMember = memberService.getMemberById(loginedMemberId);
 		
-		List<Likes> thisMemberLiked = likeService.getHistoryByUserId(loginedMemberId);
+		List<Likes> thisMemberLiked = likeService.getHistoryByMemberId(loginedMemberId);
 		
 		Map<Integer, Boolean> likedArticlesMap = new HashMap<>();
 	    for (Likes likes : thisMemberLiked) {
-	        likedArticlesMap.put(likes.getArticleId(), true);
+	        likedArticlesMap.put(likes.getRelId(), true);
 	    }
 		
 		model.addAttribute("isLogined", true);
