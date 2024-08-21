@@ -150,6 +150,14 @@ WHERE id = 4;
 ALTER TABLE article ADD COLUMN `view` INT(10) UNSIGNED NOT NULL DEFAULT 0;
 ALTER TABLE article ADD COLUMN `like` INT(10) UNSIGNED NOT NULL DEFAULT 0;
 
+#좋아요 table 생성
+CREATE TABLE `likes`(
+	id INT(10) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+	regDate DATETIME NOT NULL,
+	userId INT(10) NOT NULL,
+	articleId INT(10) NOT NULL
+);
+
 ###(INIT 끝)
 ##########################################
 SELECT *
@@ -163,6 +171,10 @@ FROM board;
 
 SELECT *
 FROM `member`;
+
+SELECT *
+FROM likes
+WHERE userId = 4;
 
 
 ###############################################################################

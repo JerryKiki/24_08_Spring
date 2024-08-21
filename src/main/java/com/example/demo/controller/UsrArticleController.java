@@ -1,13 +1,14 @@
 package com.example.demo.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.demo.service.ArticleService;
@@ -40,6 +41,7 @@ public class UsrArticleController {
 		
 		boolean isntLogined = false;
 		boolean noArticle = false;
+		boolean myArticle = false;
 		
 		if(httpSession.getAttribute("loginedMemberId") == null) {
 			isntLogined = true;
@@ -55,15 +57,23 @@ public class UsrArticleController {
 			return "/usr/alert";
 		}
 		
-		//좋아요한 이력을 확인
+		//내 글인지 확인
 		int loginedMemberId = (int) httpSession.getAttribute("loginedMemberId");
+		
+		if(article.getAuthor() == loginedMemberId) {
+			myArticle = true;
+			model.addAttribute("myArticle", myArticle);
+			return "/usr/alert";
+		}
+		
+		//좋아요한 이력을 확인
 		boolean alreadyLiked = false;
 		List<Likes> likeHistory = likeService.getHistoryByUserId(loginedMemberId);
 		if(!likeHistory.isEmpty()) {
 			alreadyLiked = likeService.checkHistoryByArticleId(likeHistory, id);
 		}
 		
-
+		//업데이트
 		likeService.updateHistory(id, loginedMemberId, alreadyLiked);
 		articleService.updateArticleLike(id, alreadyLiked);
 		
@@ -86,8 +96,8 @@ public class UsrArticleController {
 			return "/usr/alert";
 		}
 		
-		//조회수 증가
-		articleService.addView(id);
+//		//조회수 증가
+//		articleService.addView(id);
 		
 		
 		if(httpSession.getAttribute("loginedMemberId") != null) {
@@ -96,6 +106,19 @@ public class UsrArticleController {
 		
 		model.addAttribute("article", article);
 		return "/usr/article/detail";
+	}
+	
+	@RequestMapping("/usr/article/doIncreaseViewCountRd")
+	@ResponseBody
+	public ResultData doIncreaseHitCount(int id) {
+
+		ResultData increaseHitCountRd = articleService.addView(id);
+
+		if (increaseHitCountRd.isFail()) {
+			return increaseHitCountRd;
+		}
+
+		return ResultData.newData(increaseHitCountRd, "hitCount", articleService.getArticleViewCount(id));
 	}
 
 	// 로그인 체크 -> 유무 체크 -> 권한 체크 -> 수정
@@ -223,7 +246,7 @@ public class UsrArticleController {
 		
 		//게시판 넘버 처리
 		int boardIdInt = -1;
-		if(boardId != null && !boardId.equals("-1")) {
+		if(boardId != null && !boardId.equals("-1") && !(boardId.isEmpty())) {
 			gotBoardId = true;
 			boardIdInt = Integer.parseInt(boardId);
 		}
@@ -260,6 +283,7 @@ public class UsrArticleController {
 						model = setLoginInfoBySessionId(httpSession, model);
 				}
 				model.addAttribute("boardCode", board.getCode());
+				model.addAttribute("boardId", boardIdInt);
 				model.addAttribute("noneArticle", true);
 				return "/usr/article/list";
 			}
@@ -331,14 +355,14 @@ public class UsrArticleController {
 		
 		List<Likes> thisMemberLiked = likeService.getHistoryByUserId(loginedMemberId);
 		
-		List<Integer> thisMemberLikedArticlesId = new ArrayList<>();
-		for(Likes likes : thisMemberLiked) {
-			thisMemberLikedArticlesId.add(likes.getArticleId());
-		}
+		Map<Integer, Boolean> likedArticlesMap = new HashMap<>();
+	    for (Likes likes : thisMemberLiked) {
+	        likedArticlesMap.put(likes.getArticleId(), true);
+	    }
 		
 		model.addAttribute("isLogined", true);
 		model.addAttribute("loginedMember", loginedMember);
-		model.addAttribute("likeInfo", thisMemberLikedArticlesId);
+		model.addAttribute("likeInfo", likedArticlesMap);
 		
 		return model;
 	}

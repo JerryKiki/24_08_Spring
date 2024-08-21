@@ -57,8 +57,17 @@ public class ArticleService {
 		return articleRepository.getSearchedArticlesByPage(boardId,limitFrom, limitTake, searchItem, searchKeyword);
 	}
 
-	public void addView(int id) {
-		articleRepository.addView(id);
+	public ResultData addView(int id) {
+		int affectedRow = articleRepository.addView(id);
+		if (affectedRow == 0) {
+			return ResultData.from("F-1", "해당 게시글 없음", "id", id);
+		}
+		return ResultData.from("S-1", "해당 게시글 조회수 증가", "id", id);
+		
+	}
+	
+	public Object getArticleViewCount(int id) {
+		return articleRepository.getArticleViewCount(id);
 	}
 
 	public void updateArticleLike(int articleId, boolean alreadyLiked) {

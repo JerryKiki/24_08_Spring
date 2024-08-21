@@ -41,8 +41,14 @@
 						<td style="text-align: center"><a href="doModify?id=${article.id}">수정</a></td>
 						<td style="text-align: center"><a href="doDelete?id=${article.id}">삭제</a></td>
 						<td style="text-align: center">
-							<c:if test="${fn:contains(likeInfo, article.id) }"><a href="doLike?id=${article.id}">♥</a></c:if>
-							<c:if test="${!fn:contains(likeInfo, article.id) }"><a href="doLike?id=${article.id}">♡</a></c:if>
+							<c:choose>
+    							<c:when test="${likeInfo[article.id]}">
+        							<a href="doLike?id=${article.id}">♥</a>
+							    </c:when>
+							    <c:otherwise>
+							        <a href="doLike?id=${article.id}">♡</a>
+							    </c:otherwise>
+							</c:choose>
 						</td>
 					</c:if>
 				</tr>
@@ -87,6 +93,7 @@
 		<div style="text-align: left">▶ Search On This Board</div>
 		<form onsubmit="searchForm__submit(this); return false;" style="font-size: 1.4rem;" action="getArticles" class="flex justify-center items-center">
 		<input type="hidden" value="${boardId }" name="boardId" />
+		<input type="hidden" value="1" name="page" />
 		<div>
 			<select class="select select-bordered select-sm" name="searchItem" id="column">
 				<option value="select">Select</option>
@@ -154,6 +161,19 @@
 			form.submit();
 		}
 		
+// 		function compareId(articleId) {
+// 			var likeInfo = '${likeInfo}';
+// 			var exists = false;
+
+// 			if(arr.indexOf(articleId) != -1)  {
+// 			  elementExistYn = true;
+// 			}
+			
+// 			if(exists) {
+// 				${"this"}.text("♥")
+// 			}
+// 		}
+		
 	</script>
 	
 <%@ include file="../common/foot.jspf"%>
@@ -168,7 +188,9 @@
 <%-- // 				${this}.text("♥"); --%>
 <!-- // 			} -->
 <!-- // 		} -->
-	
+
+<%-- <c:if test="${fn:contains(likeInfo, article.id) }"> --%>
+<%-- <c:if test="${fn:!contains(likeInfo, article.id) }"> --%>
 	
 <!-- 		<h3>기존 문법</h3> -->
 <%--List<Article> articles = (List<Article>) request.getAttribute("articles"); %>	-->

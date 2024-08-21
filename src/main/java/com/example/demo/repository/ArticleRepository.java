@@ -38,7 +38,14 @@ public interface ArticleRepository {
 	public List<Article> getSearchedArticlesByPage(int boardId, int limitFrom, int limitTake, String searchItem, String searchKeyword);
 
 	@Update("UPDATE article SET `view` = `view` + 1 WHERE id=${id}")
-	public void addView(int id);
+	public int addView(int id);
+	
+	@Select("""
+			SELECT `view`
+			FROM article
+			WHERE id = #{id}
+				""")
+	public int getArticleViewCount(int id);
 
 	@Update("UPDATE article SET `like` = `like` + 1 WHERE id=${id}")
 	public void addLike(int id);

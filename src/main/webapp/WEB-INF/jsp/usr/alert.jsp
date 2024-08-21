@@ -60,5 +60,8 @@
 	<c:if test="${likeUpdated}">
 		<script>location.href = document.referrer;</script>
 	</c:if>
+	<c:if test="${myArticle}">
+		<script>alert('자신의 게시글에는 좋아요할 수 없습니다.'); location.href = document.referrer;</script>
+	</c:if>
 </body>
 </html>
