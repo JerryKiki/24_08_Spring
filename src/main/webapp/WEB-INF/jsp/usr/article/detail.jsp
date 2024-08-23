@@ -100,23 +100,16 @@
 		</ul>
 	</c:if>
 	<c:if test="${!canAccess }">
+		<div class="likes btn" style="background-color: #36BA98; color: white; font-weight: bold; font-size: 1.4rem;" onclick="ArticleList__doUpdateAfterLike(${article.id});">
 			<c:choose>
 				<c:when test="${likeInfo[article.id]}">
-					<div class="likes btn" style="background-color: #36BA98; color: white; font-weight: bold; font-size: 1.2rem;" onclick="ArticleList__doUpdateAfterLike(${article.id});">
-						<a href="#">
-							<span id="likeIcon-${article.id}">♥</span>
-						</a>
-					</div>
+					<span id="likeIcon-${article.id}">♥</span>
 				</c:when>
 				<c:otherwise>
-					<div class="likes btn" style="background-color: #36BA98; color: white; font-weight: bold; font-size: 1.2rem;" onclick="ArticleList__doUpdateAfterLike(${article.id});">
-						<a href="#">
-							<span id="likeIcon-${article.id}">♡</span>
-						</a>
-					</div>
+					<span id="likeIcon-${article.id}">♡</span>
 				</c:otherwise>
 			</c:choose>
-		
+		</div>
 	</c:if>
 	
 <%-- 	<c:if test="${!canAccess }"> --%>
