@@ -4,7 +4,51 @@
 <c:set var="pageTitle" value="${boardCode } LIST"></c:set>
 <%@ include file="../common/head.jspf"%>
 
-	<!-- JS -->
+<!-- JS -->
+<script>
+    function ArticleList__doUpdateAfterLike(articleId) {
+        $.get('../article/doLikeArticle', {
+            id: articleId,
+            ajaxMode: 'Y'
+        }, function(data) {
+            console.log(data);
+            console.log(data.resultCode);
+            
+            if (data.resultCode.startsWith('S-')) {
+                console.log('Updated like info:', data.data1);
+                const likeInfo = data.data1;
+                const likeIcon = $(`#likeIcon-` + articleId);
+                if (likeInfo.hasOwnProperty(articleId)) {
+                   likeIcon.text('♥');
+                } else {
+                	likeIcon.text('♡');
+                }
+                ArticleList__doUpdateLikeCount(articleId);
+            } else if (data.resultCode.startsWith('F-1')) {
+                alert('존재하지 않는 게시글입니다.');
+            } else if (data.resultCode.startsWith('F-2')) {
+                alert('자신의 게시글에는 좋아요할 수 없습니다.');
+            } else if (data.resultCode.startsWith('F-A')) {
+                alert('로그인 후 이용해주세요.');
+            }
+        }, 'json').fail(function(jqXHR, textStatus, errorThrown) {
+            console.error('AJAX request failed:', textStatus, errorThrown);
+            alert('서버 요청이 실패했습니다.');
+        });
+    }
+    
+    function ArticleList__doUpdateLikeCount(articleId) {
+    	$.get('../article/doGetLikeCount', {
+    		id: articleId,
+    		ajaxMode: 'Y'
+    	}, function(data) {
+    		console.log(data)
+    		const likeCount = data;
+    		$(`#likeCount-` + articleId).text(likeCount);
+    		
+    	}, 'json')
+    }
+</script>
 
 	<c:if test="${searched }">
 		<div style="margin-right: auto; margin-bottom: 3px; font-size: 1.2rem;">${searchItem }에 대한 ${searchKeyword } 검색 결과</div>
@@ -38,19 +82,23 @@
 					<td style="text-align: center;"><a href="getArticle?id=${article.id}">${article.title}</a></td>
 					<td style="text-align: center;">${article.nickname}</td>
 					<td style="text-align: center;">${article.view}</td>
-					<td style="text-align: center;">${article.like}</td>
+					<td style="text-align: center;" id="likeCount-${article.id}">${article.like}</td>
 					<c:if test="${isLogined }">
 						<td style="text-align: center"><a href="doModify?id=${article.id}">수정</a></td>
 						<td style="text-align: center"><a href="doDelete?id=${article.id}">삭제</a></td>
 						<td style="text-align: center">
 							<c:choose>
-    							<c:when test="${likeInfo[article.id]}">
-        							<a href="doLikeArticle?id=${article.id}">♥</a>
-							    </c:when>
-							    <c:otherwise>
-							        <a href="doLikeArticle?id=${article.id}">♡</a>
-							    </c:otherwise>
-							</c:choose>
+						        <c:when test="${likeInfo[article.id]}">
+						            <a href="#" onclick="ArticleList__doUpdateAfterLike(${article.id}); return false;">
+						                <span id="likeIcon-${article.id}">♥</span>
+						            </a>
+						        </c:when>
+						        <c:otherwise>
+						            <a href="#" onclick="ArticleList__doUpdateAfterLike(${article.id}); return false;">
+						                <span id="likeIcon-${article.id}">♡</span>
+						            </a>
+						        </c:otherwise>
+						    </c:choose>
 						</td>
 					</c:if>
 				</tr>

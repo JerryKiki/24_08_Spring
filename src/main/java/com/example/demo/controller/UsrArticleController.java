@@ -38,7 +38,7 @@ public class UsrArticleController {
 	
 	@RequestMapping("/usr/article/doLikeArticle")
 	@ResponseBody
-	public Object likeArtice(int id, HttpSession httpSession, Model model) {
+	public ResultData likeArtice(int id, HttpSession httpSession, Model model) {
 		
 		boolean isntLogined = false;
 		boolean noArticle = false;
@@ -46,14 +46,14 @@ public class UsrArticleController {
 		
 		if(httpSession.getAttribute("loginedMemberId") == null) {
 			isntLogined = true;
-			return "<script>alert('로그인 후 이용할 수 있습니다.'); location.href = document.referrer;</script>";
+			return ResultData.from("F-A", "로그인 후 이용해주세요.");
 		}
 		
 		Article article = articleService.getArticleById(id);
 		
 		if (article == null) {
 			noArticle = true;
-			return "<script>alert('존재하지 않는 게시글입니다.'); location.href = document.referrer;</script>";
+			return ResultData.from("F-1", "존재하지 않는 게시글입니다.", "id", id);
 		}
 		
 		//내 글인지 확인
@@ -61,7 +61,7 @@ public class UsrArticleController {
 		
 		if(article.getAuthor() == loginedMemberId) {
 			myArticle = true;
-			return "<script>alert('자신의 게시글에는 좋아요할 수 없습니다.'); location.href = document.referrer;</script>";
+			return ResultData.from("F-2", "자신의 게시글에는 좋아요할 수 없습니다.", "id", id);
 		}
 		
 		//좋아요한 이력을 확인
@@ -77,7 +77,7 @@ public class UsrArticleController {
 		
 		Map<Integer, Boolean> newLikeInfo = getLikeInfo(httpSession);
 		
-		return "<script>location.href = document.referrer;</script>";
+		return ResultData.from("S-1", "좋아요 갱신 성공", "newLikeInfo", newLikeInfo);
 		
 	}
 
@@ -118,6 +118,12 @@ public class UsrArticleController {
 		}
 
 		return ResultData.newData(increaseViewCountRd, "hitCount", articleService.getArticleViewCount(id));
+	}
+	
+	@RequestMapping("/usr/article/doGetLikeCount")
+	@ResponseBody
+	public int doGetLikeCount(int id) {
+		return articleService.getArticleLikeCountById(id);
 	}
 
 	// 로그인 체크 -> 유무 체크 -> 권한 체크 -> 수정

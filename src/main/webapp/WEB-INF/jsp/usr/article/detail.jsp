@@ -36,14 +36,59 @@
 		})
 	</script>
 	
+	<script>
+	    function ArticleList__doUpdateAfterLike(articleId) {
+	        $.get('../article/doLikeArticle', {
+	            id: articleId,
+	            ajaxMode: 'Y'
+	        }, function(data) {
+	            console.log(data);
+	            console.log(data.resultCode);
+	            
+	            if (data.resultCode.startsWith('S-')) {
+	                console.log('Updated like info:', data.data1);
+	                const likeInfo = data.data1;
+	                const likeIcon = $(`#likeIcon-` + articleId);
+	                if (likeInfo.hasOwnProperty(articleId)) {
+	                   likeIcon.text('♥');
+	                } else {
+	                	likeIcon.text('♡');
+	                }
+	                ArticleList__doUpdateLikeCount(articleId);
+	            } else if (data.resultCode.startsWith('F-1')) {
+	                alert('존재하지 않는 게시글입니다.');
+	            } else if (data.resultCode.startsWith('F-2')) {
+	                alert('자신의 게시글에는 좋아요할 수 없습니다.');
+	            } else if (data.resultCode.startsWith('F-A')) {
+	                alert('로그인 후 이용해주세요.');
+	            }
+	        }, 'json').fail(function(jqXHR, textStatus, errorThrown) {
+	            console.error('AJAX request failed:', textStatus, errorThrown);
+	            alert('서버 요청이 실패했습니다.');
+	        });
+	    }
+	    
+	    function ArticleList__doUpdateLikeCount(articleId) {
+	    	$.get('../article/doGetLikeCount', {
+	    		id: articleId,
+	    		ajaxMode: 'Y'
+	    	}, function(data) {
+	    		console.log(data)
+	    		const likeCount = data;
+	    		$(`#likeCount-` + articleId).text("좋아요 : " + likeCount);
+	    		
+	    	}, 'json')
+	    }
+	</script>
+	
 	<div class="details">
 		<div>번호 : ${article.id }</div>
 		<div>날짜 : ${article.regDate.substring(0,10) }</div>
 		<div>제목 : ${article.title }</div>
 		<div>내용 : ${article.body }</div>
 		<div>작성자 : ${article.nickname }</div>
-		<span class="article-detail__view-count">조회수 : ${article.view }</span>
-		<div>좋아요 : ${article.like }</div>
+		<div><span class="article-detail__view-count">조회수 : ${article.view }</span></div>
+		<div><span id="likeCount-${article.id}">좋아요 : ${article.like }</span></div>
 	</div>
 	
 	<br />
@@ -53,6 +98,25 @@
 			<li><a href="doModify?id=${article.id }">수정</a></li>
 			<li><a href="doDelete?id=${article.id }">삭제</a></li>
 		</ul>
+	</c:if>
+	<c:if test="${!canAccess }">
+			<c:choose>
+				<c:when test="${likeInfo[article.id]}">
+					<div class="likes btn" style="background-color: #36BA98; color: white; font-weight: bold; font-size: 1.2rem;" onclick="ArticleList__doUpdateAfterLike(${article.id});">
+						<a href="#">
+							<span id="likeIcon-${article.id}">♥</span>
+						</a>
+					</div>
+				</c:when>
+				<c:otherwise>
+					<div class="likes btn" style="background-color: #36BA98; color: white; font-weight: bold; font-size: 1.2rem;" onclick="ArticleList__doUpdateAfterLike(${article.id});">
+						<a href="#">
+							<span id="likeIcon-${article.id}">♡</span>
+						</a>
+					</div>
+				</c:otherwise>
+			</c:choose>
+		
 	</c:if>
 	
 <%-- 	<c:if test="${!canAccess }"> --%>

@@ -52,6 +52,9 @@ public interface ArticleRepository {
 
 	@Update("UPDATE article SET `like` = `like` - 1 WHERE id=${id}")
 	public void minusLike(int articleId);
+
+	@Select("SELECT `like` FROM article WHERE id = #{id}")
+	public int getArticleLikeCountById(int id);
 }
 	
 //	@Insert("INSERT INTO article SET regDate = NOW(), updateDate = NOW(), title = #{title}, `body` = #{body}")

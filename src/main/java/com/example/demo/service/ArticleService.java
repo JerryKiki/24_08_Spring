@@ -80,6 +80,10 @@ public class ArticleService {
 		}
 	}
 
+	public int getArticleLikeCountById(int id) {
+		return articleRepository.getArticleLikeCountById(id);
+	}
+
 }
 
 //@Service
