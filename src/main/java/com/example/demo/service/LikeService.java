@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.repository.LikeRepository;
 import com.example.demo.vo.Likes;
+import com.example.demo.vo.ResultData;
 
 @Service
 public class LikeService {

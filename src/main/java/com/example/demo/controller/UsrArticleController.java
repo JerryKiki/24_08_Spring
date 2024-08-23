@@ -37,7 +37,8 @@ public class UsrArticleController {
 	private LikeService likeService;
 	
 	@RequestMapping("/usr/article/doLikeArticle")
-	public String likeArtice(int id, HttpSession httpSession, Model model) {
+	@ResponseBody
+	public Object likeArtice(int id, HttpSession httpSession, Model model) {
 		
 		boolean isntLogined = false;
 		boolean noArticle = false;
@@ -45,16 +46,14 @@ public class UsrArticleController {
 		
 		if(httpSession.getAttribute("loginedMemberId") == null) {
 			isntLogined = true;
-			model.addAttribute("isntLogined", isntLogined);
-			return "/usr/alert";
+			return "<script>alert('로그인 후 이용할 수 있습니다.'); location.href = document.referrer;</script>";
 		}
 		
 		Article article = articleService.getArticleById(id);
 		
 		if (article == null) {
 			noArticle = true;
-			model.addAttribute("noArticle", noArticle);
-			return "/usr/alert";
+			return "<script>alert('존재하지 않는 게시글입니다.'); location.href = document.referrer;</script>";
 		}
 		
 		//내 글인지 확인
@@ -62,8 +61,7 @@ public class UsrArticleController {
 		
 		if(article.getAuthor() == loginedMemberId) {
 			myArticle = true;
-			model.addAttribute("myArticle", myArticle);
-			return "/usr/alert";
+			return "<script>alert('자신의 게시글에는 좋아요할 수 없습니다.'); location.href = document.referrer;</script>";
 		}
 		
 		//좋아요한 이력을 확인
@@ -77,11 +75,12 @@ public class UsrArticleController {
 		likeService.updateHistory(id, loginedMemberId, alreadyLiked);
 		articleService.updateArticleLike(id, alreadyLiked);
 		
-		model.addAttribute("likeUpdated", true);
+		Map<Integer, Boolean> newLikeInfo = getLikeInfo(httpSession);
 		
-		return "/usr/alert";
+		return "<script>location.href = document.referrer;</script>";
 		
 	}
+
 
 	@RequestMapping("/usr/article/getArticle")
 	public String getArticle(int id, HttpSession httpSession, Model model) {
@@ -352,17 +351,11 @@ public class UsrArticleController {
 	public Model setLoginInfoBySessionId(HttpSession httpSession, Model model) {
 		int loginedMemberId = (int) httpSession.getAttribute("loginedMemberId");
 		Member loginedMember = memberService.getMemberById(loginedMemberId);
-		
-		List<Likes> thisMemberLiked = likeService.getHistoryByMemberId(loginedMemberId);
-		
-		Map<Integer, Boolean> likedArticlesMap = new HashMap<>();
-	    for (Likes likes : thisMemberLiked) {
-	        likedArticlesMap.put(likes.getRelId(), true);
-	    }
+		Map<Integer, Boolean> likeInfo = getLikeInfo(httpSession);
 		
 		model.addAttribute("isLogined", true);
 		model.addAttribute("loginedMember", loginedMember);
-		model.addAttribute("likeInfo", likedArticlesMap);
+		model.addAttribute("likeInfo", likeInfo);
 		
 		return model;
 	}
@@ -376,6 +369,20 @@ public class UsrArticleController {
 		}
 		
 		return model;
+	}
+	
+	public Map<Integer, Boolean> getLikeInfo(HttpSession httpSession) {
+		int loginedMemberId = (int) httpSession.getAttribute("loginedMemberId");
+		Member loginedMember = memberService.getMemberById(loginedMemberId);
+		
+		List<Likes> thisMemberLiked = likeService.getHistoryByMemberId(loginedMemberId);
+		
+		Map<Integer, Boolean> likedArticlesMap = new HashMap<>();
+	    for (Likes likes : thisMemberLiked) {
+	        likedArticlesMap.put(likes.getRelId(), true);
+	    }
+	    
+	    return likedArticlesMap;
 	}
 
 //	@RequestMapping("/usr/article/getArticles")

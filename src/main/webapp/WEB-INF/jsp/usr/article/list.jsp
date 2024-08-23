@@ -4,6 +4,8 @@
 <c:set var="pageTitle" value="${boardCode } LIST"></c:set>
 <%@ include file="../common/head.jspf"%>
 
+	<!-- JS -->
+
 	<c:if test="${searched }">
 		<div style="margin-right: auto; margin-bottom: 3px; font-size: 1.2rem;">${searchItem }에 대한 ${searchKeyword } 검색 결과</div>
 	</c:if>
