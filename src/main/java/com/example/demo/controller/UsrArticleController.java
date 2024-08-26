@@ -38,7 +38,7 @@ public class UsrArticleController {
 	
 	@RequestMapping("/usr/article/doLikeArticle")
 	@ResponseBody
-	public ResultData likeArtice(int id, HttpSession httpSession, Model model) {
+	public ResultData likeArtice(int id, int point, HttpSession httpSession, Model model) {
 		
 		boolean isntLogined = false;
 		boolean noArticle = false;
@@ -61,24 +61,51 @@ public class UsrArticleController {
 		
 		if(article.getAuthor() == loginedMemberId) {
 			myArticle = true;
-			return ResultData.from("F-2", "자신의 게시글에는 좋아요할 수 없습니다.", "id", id);
+			return ResultData.from("F-2", "자신의 게시글에는 좋아요/싫어요할 수 없습니다.", "id", id);
 		}
 		
-		//좋아요한 이력을 확인
-		boolean alreadyLiked = false;
-		List<Likes> likeHistory = likeService.getHistoryByMemberId(loginedMemberId);
-		if(!likeHistory.isEmpty()) {
-			alreadyLiked = likeService.checkHistoryByArticleId(likeHistory, id);
+		//반응한 이력을 확인
+		boolean alreadyActioned = false;
+		Likes likeInfo = likeService.getHistoryByIds(loginedMemberId, id);
+		if(likeInfo != null) {
+			alreadyActioned = true;
 		}
 		
-		//업데이트
-		likeService.updateHistory(id, loginedMemberId, alreadyLiked);
-		articleService.updateArticleLike(id, alreadyLiked);
+//		likeService.updateNoneToggleLikeHistory(id, loginedMemberId, alreadyActioned, point);
+//		articleService.updateArticleLikeCount(id, alreadyActioned, point);
 		
-		Map<Integer, Boolean> newLikeInfo = getLikeInfo(httpSession);
+		boolean toggled = false;
+		if(alreadyActioned) { //이미 반응했다면
+			int oldPoint = likeInfo.getPoint();
+			if(point == oldPoint) { //이미 누른 버튼을 한번 더 눌렀는가? ==> //취소만
+				likeService.updateNoneToggleLikeHistory(id, loginedMemberId, alreadyActioned, point);
+				articleService.updateArticleLikeCount(id, alreadyActioned, point);
+			} else { //다른쪽 버튼을 눌렀는가? ==> 토글
+				toggled = true;
+				likeService.updateToggleLikeHistory(id, loginedMemberId, point);
+				articleService.updateArticleLikeCountByToggle(id, point);
+			}
+		} else { //반응한 적 없다면
+			likeService.updateNoneToggleLikeHistory(id, loginedMemberId, alreadyActioned, point); //포인트까지 넘겨줘서 알아서 업뎃
+			articleService.updateArticleLikeCount(id, alreadyActioned, point);
+		}
 		
-		return ResultData.from("S-1", "좋아요 갱신 성공", "newLikeInfo", newLikeInfo);
-		
+		//새로운 likeInfo 보내기
+		if(point == 1) {
+			Map<Integer, Boolean> newLikeInfo = getLikeInfo(httpSession);
+			if(!toggled) {
+			return ResultData.from("S-1", "좋아요 갱신 성공 : 일반", "newLikeInfo", newLikeInfo);
+			} else {
+				return ResultData.from("S-2", "좋아요 갱신 성공 : 토글", "newLikeInfo", newLikeInfo);
+			}
+		} else {
+			Map<Integer, Boolean> newDislikeInfo = getDislikeInfo(httpSession);
+			if(!toggled) {
+				return ResultData.from("S-3", "싫어요 갱신 성공 : 일반", "newDislikeInfo", newDislikeInfo);
+			} else {
+				return ResultData.from("S-4", "싫어요 갱신 성공 : 토글", "newLikeInfo", newDislikeInfo);
+			}
+		}
 	}
 
 
@@ -358,10 +385,12 @@ public class UsrArticleController {
 		int loginedMemberId = (int) httpSession.getAttribute("loginedMemberId");
 		Member loginedMember = memberService.getMemberById(loginedMemberId);
 		Map<Integer, Boolean> likeInfo = getLikeInfo(httpSession);
+		Map<Integer, Boolean> dislikeInfo = getDislikeInfo(httpSession);
 		
 		model.addAttribute("isLogined", true);
 		model.addAttribute("loginedMember", loginedMember);
 		model.addAttribute("likeInfo", likeInfo);
+		model.addAttribute("dislikeInfo", dislikeInfo);
 		
 		return model;
 	}
@@ -385,14 +414,34 @@ public class UsrArticleController {
 		
 		Map<Integer, Boolean> likedArticlesMap = new HashMap<>();
 	    for (Likes likes : thisMemberLiked) {
-	        likedArticlesMap.put(likes.getRelId(), true);
+	    	if(likes.getPoint() == 1) {
+	    		likedArticlesMap.put(likes.getRelId(), true);
+	    	}
 	    }
 	    
 	    return likedArticlesMap;
 	}
+	
+	public Map<Integer, Boolean> getDislikeInfo(HttpSession httpSession) {
+		int loginedMemberId = (int) httpSession.getAttribute("loginedMemberId");
+		Member loginedMember = memberService.getMemberById(loginedMemberId);
+		
+		List<Likes> thisMemberdisliked = likeService.getHistoryByMemberId(loginedMemberId);
+		
+		Map<Integer, Boolean> dislikedArticlesMap = new HashMap<>();
+	    for (Likes likes : thisMemberdisliked) {
+	    	if(likes.getPoint() == -1) {
+	    		dislikedArticlesMap.put(likes.getRelId(), true);
+	    	}
+	    }
+	    
+	    return dislikedArticlesMap;
+	}
 
 //	@RequestMapping("/usr/article/getArticles")
 //	@ResponseBody
+	
+	
 //	public ResultData<List<Article>> getArticles() {
 //		List<Article> articles = articleService.getArticles();
 //		return ResultData.from("S-1", "Article List", "게시글 목록", articles);

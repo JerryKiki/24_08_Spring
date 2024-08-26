@@ -37,23 +37,50 @@
 	</script>
 	
 	<script>
-	    function ArticleList__doUpdateAfterLike(articleId) {
+	    function ArticleList__doUpdateAfterLike(articleId, likePoint) {
 	        $.get('../article/doLikeArticle', {
 	            id: articleId,
+	            point: likePoint,
 	            ajaxMode: 'Y'
 	        }, function(data) {
 	            console.log(data);
 	            console.log(data.resultCode);
 	            
 	            if (data.resultCode.startsWith('S-')) {
-	                console.log('Updated like info:', data.data1);
-	                const likeInfo = data.data1;
+	                console.log('Updated Info:', data.data1);
+	                const newInfo = data.data1;
 	                const likeIcon = $(`#likeIcon-` + articleId);
-	                if (likeInfo.hasOwnProperty(articleId)) {
-	                   likeIcon.text('♥');
-	                } else {
-	                	likeIcon.text('♡');
-	                }
+	                const dislikeIcon = $(`#dislikeIcon-` + articleId);
+	                
+	                if(data.resultCode == 'S-1') {
+	                	 if (newInfo.hasOwnProperty(articleId)) {
+	                        likeIcon.text('LIKE ♥');
+	                      } else {
+	                      	likeIcon.text('LIKE ♡');
+	                      }
+	                } else if(data.resultCode == 'S-2') {
+	                	if (newInfo.hasOwnProperty(articleId)) {
+	                        likeIcon.text('LIKE ♥');
+	                        dislikeIcon.text('DISLIKE ▽');
+	                     } else {
+	                     	likeIcon.text('LIKE ♡');
+	                     	dislikeIcon.text('DISLIKE ▼');
+	                     }
+	                } else if(data.resultCode == 'S-3') {
+	                	if (newInfo.hasOwnProperty(articleId)) {
+	                		dislikeIcon.text('DISLIKE ▼');
+	                	} else {
+	                		dislikeIcon.text('DISLIKE ▽');
+	                	}
+	                } else if(data.resultCode == 'S-4') {
+	                	if (newInfo.hasOwnProperty(articleId)) {
+	                		dislikeIcon.text('DISLIKE ▼');
+	                		likeIcon.text('LIKE ♡');
+	                	} else {
+	                		dislikeIcon.text('DISLIKE ▽');
+	                		likeIcon.text('LIKE ♥');
+	                	}
+	                }              
 	                ArticleList__doUpdateLikeCount(articleId);
 	            } else if (data.resultCode.startsWith('F-1')) {
 	                alert('존재하지 않는 게시글입니다.');
@@ -100,15 +127,27 @@
 		</ul>
 	</c:if>
 	<c:if test="${!canAccess }">
-		<div class="likes btn" style="background-color: #36BA98; color: white; font-weight: bold; font-size: 1.4rem;" onclick="ArticleList__doUpdateAfterLike(${article.id});">
-			<c:choose>
-				<c:when test="${likeInfo[article.id]}">
-					<span id="likeIcon-${article.id}">♥</span>
-				</c:when>
-				<c:otherwise>
-					<span id="likeIcon-${article.id}">♡</span>
-				</c:otherwise>
-			</c:choose>
+		<div class="like_dislike_btns flex items-center flex-row mx-auto">
+			<div class="likes btn" style="background-color: #36BA98; color: white; font-weight: bold; font-size: 1.4rem; margin-right: 5px;" onclick="ArticleList__doUpdateAfterLike(${article.id}, 1);">
+				<c:choose>
+					<c:when test="${likeInfo[article.id]}">
+						<span id="likeIcon-${article.id}">LIKE ♥</span>
+					</c:when>
+					<c:otherwise>
+						<span id="likeIcon-${article.id}">LIKE ♡</span>
+					</c:otherwise>
+				</c:choose>
+			</div>
+			<div class="dislikes btn" style="background-color: #36BA98; color: white; font-weight: bold; font-size: 1.4rem; margin-left: 5px;" onclick="ArticleList__doUpdateAfterLike(${article.id}, -1);">
+				<c:choose>
+					<c:when test="${dislikeInfo[article.id]}">
+						<span id="dislikeIcon-${article.id}">DISLIKE ▼</span>
+					</c:when>
+					<c:otherwise>
+						<span id="dislikeIcon-${article.id}">DISLIKE▽</span>
+					</c:otherwise>
+				</c:choose>
+			</div>
 		</div>
 	</c:if>
 	

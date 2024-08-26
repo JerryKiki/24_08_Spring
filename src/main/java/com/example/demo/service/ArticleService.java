@@ -70,18 +70,37 @@ public class ArticleService {
 		return articleRepository.getArticleViewCount(id);
 	}
 
-	public void updateArticleLike(int articleId, boolean alreadyLiked) {
-		if(alreadyLiked) { //이미 좋아요 했다면 해제
-			//아티클의 좋아요 수 -1
-			articleRepository.minusLike(articleId);
+	//좋아요 수
+	public void updateArticleLikeCount(int articleId, boolean alreadyActioned, int point) {
+		if(alreadyActioned) { //이미 반응했다면
+			if(point==1) {
+				//포인트가 1(좋아요)라면 아티클의 좋아요 수 -1
+				articleRepository.minusLike(articleId);
+			} else if (point == -1) {
+				//포인트가 -1(싫어요)라면 아티클의 좋아요 수 +1
+				articleRepository.addLike(articleId);
+			}
 		} else { //좋아요 기록이 없다면 등록
-			//아티클의 좋아요 수 +1
-			articleRepository.addLike(articleId);
+			if(point==1) { //1(좋아요)라면 +1
+				articleRepository.addLike(articleId);
+			}else if (point == -1) { //-1(싫어요)라면 -1
+				articleRepository.minusLike(articleId);
+			}
 		}
 	}
 
 	public int getArticleLikeCountById(int id) {
 		return articleRepository.getArticleLikeCountById(id);
+	}
+
+	public void updateArticleLikeCountByToggle(int articleId, int point) {
+		if(point == 1) { //싫어요=>좋아요라면 +1 +1
+			articleRepository.addLike(articleId);
+			articleRepository.addLike(articleId);
+		} else if(point == -1) { //좋아요=>싫어요라면 -1 -1
+			articleRepository.minusLike(articleId);
+			articleRepository.minusLike(articleId);
+		}
 	}
 
 }

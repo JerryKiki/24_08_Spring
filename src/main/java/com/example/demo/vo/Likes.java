@@ -13,4 +13,5 @@ public class Likes {
 	private int memberId;
 	private int relTypeCode;
 	private int relId;
+	private int point;
 }

@@ -6,28 +6,55 @@
 
 <!-- JS -->
 <script>
-    function ArticleList__doUpdateAfterLike(articleId) {
+    function ArticleList__doUpdateAfterLike(articleId, likePoint) {
         $.get('../article/doLikeArticle', {
             id: articleId,
+            point: likePoint,
             ajaxMode: 'Y'
         }, function(data) {
             console.log(data);
             console.log(data.resultCode);
             
             if (data.resultCode.startsWith('S-')) {
-                console.log('Updated like info:', data.data1);
-                const likeInfo = data.data1;
+                console.log('Updated Info:', data.data1);
+                const newInfo = data.data1;
                 const likeIcon = $(`#likeIcon-` + articleId);
-                if (likeInfo.hasOwnProperty(articleId)) {
-                   likeIcon.text('♥');
-                } else {
-                	likeIcon.text('♡');
-                }
+                const dislikeIcon = $(`#dislikeIcon-` + articleId);
+                
+                if(data.resultCode == 'S-1') {
+                	 if (newInfo.hasOwnProperty(articleId)) {
+                        likeIcon.text('♥');
+                      } else {
+                      	likeIcon.text('♡');
+                      }
+                } else if(data.resultCode == 'S-2') {
+                	if (newInfo.hasOwnProperty(articleId)) {
+                        likeIcon.text('♥');
+                        dislikeIcon.text('▽');
+                     } else {
+                     	likeIcon.text('♡');
+                     	dislikeIcon.text('▼');
+                     }
+                } else if(data.resultCode == 'S-3') {
+                	if (newInfo.hasOwnProperty(articleId)) {
+                		dislikeIcon.text('▼');
+                	} else {
+                		dislikeIcon.text('▽');
+                	}
+                } else if(data.resultCode == 'S-4') {
+                	if (newInfo.hasOwnProperty(articleId)) {
+                		dislikeIcon.text('▼');
+                		likeIcon.text('♡');
+                	} else {
+                		dislikeIcon.text('▽');
+                		likeIcon.text('♥');
+                	}
+                }              
                 ArticleList__doUpdateLikeCount(articleId);
             } else if (data.resultCode.startsWith('F-1')) {
                 alert('존재하지 않는 게시글입니다.');
             } else if (data.resultCode.startsWith('F-2')) {
-                alert('자신의 게시글에는 좋아요할 수 없습니다.');
+                alert('자신의 게시글에는 좋아요/싫어요할 수 없습니다.');
             } else if (data.resultCode.startsWith('F-A')) {
                 alert('로그인 후 이용해주세요.');
             }
@@ -64,11 +91,12 @@
 				<th style="text-align: center;">Title</th>
 				<th style="text-align: center;">Author</th>
 				<th style="text-align: center;">View</th>
-				<th style="text-align: center;">Liked</th>
+				<th style="text-align: center;">Popularity</th>
 				<c:if test="${isLogined }">
-					<th style="text-align: center;">Modify</th>
-					<th style="text-align: center;">Delete</th>
+<!-- 					<th style="text-align: center;">Modify</th> -->
+<!-- 					<th style="text-align: center;">Delete</th> -->
 					<th style="text-align: center;">Like</th>
+					<th style="text-align: center;">DisLike</th>
 				</c:if>
 			</tr>
 		</thead>
@@ -84,18 +112,32 @@
 					<td style="text-align: center;">${article.view}</td>
 					<td style="text-align: center;" id="likeCount-${article.id}">${article.like}</td>
 					<c:if test="${isLogined }">
-						<td style="text-align: center"><a href="doModify?id=${article.id}">수정</a></td>
-						<td style="text-align: center"><a href="doDelete?id=${article.id}">삭제</a></td>
+<%-- 						<td style="text-align: center"><a href="doModify?id=${article.id}">수정</a></td> --%>
+<%-- 						<td style="text-align: center"><a href="doDelete?id=${article.id}">삭제</a></td> --%>
 						<td style="text-align: center">
 							<c:choose>
 						        <c:when test="${likeInfo[article.id]}">
-						            <a href="#" onclick="ArticleList__doUpdateAfterLike(${article.id}); return false;">
+						            <a href="#" onclick="ArticleList__doUpdateAfterLike(${article.id}, 1); return false;">
 						                <span id="likeIcon-${article.id}">♥</span>
 						            </a>
 						        </c:when>
 						        <c:otherwise>
-						            <a href="#" onclick="ArticleList__doUpdateAfterLike(${article.id}); return false;">
+						            <a href="#" onclick="ArticleList__doUpdateAfterLike(${article.id}, 1); return false;">
 						                <span id="likeIcon-${article.id}">♡</span>
+						            </a>
+						        </c:otherwise>
+						    </c:choose>
+						</td>
+						<td style="text-align: center">
+							<c:choose>
+						        <c:when test="${dislikeInfo[article.id]}">
+						            <a href="#" onclick="ArticleList__doUpdateAfterLike(${article.id}, -1); return false;">
+						                <span id="dislikeIcon-${article.id}">▼</span>
+						            </a>
+						        </c:when>
+						        <c:otherwise>
+						            <a href="#" onclick="ArticleList__doUpdateAfterLike(${article.id}, -1); return false;">
+						                <span id="dislikeIcon-${article.id}">▽</span>
 						            </a>
 						        </c:otherwise>
 						    </c:choose>
