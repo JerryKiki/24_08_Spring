@@ -29,8 +29,6 @@ CREATE TABLE `member`(
       delDate DATETIME COMMENT '탈퇴 날짜'
 );
 
-
-
 ## 게시글 테스트 데이터 생성
 INSERT INTO article
 SET regDate = NOW(),
@@ -148,7 +146,7 @@ SET boardId = 3
 WHERE id = 4;
 
 ALTER TABLE article ADD COLUMN `view` INT(10) UNSIGNED NOT NULL DEFAULT 0;
-ALTER TABLE article ADD COLUMN `like` INT(10) UNSIGNED NOT NULL DEFAULT 0;
+ALTER TABLE article ADD COLUMN `like` INT(10) NOT NULL DEFAULT 0;
 
 #좋아요 table 생성
 CREATE TABLE `likes`(
@@ -156,8 +154,43 @@ CREATE TABLE `likes`(
 	regDate DATETIME NOT NULL,
 	memberId INT(10) NOT NULL,
 	relTypeCode INT(10) UNSIGNED NOT NULL COMMENT '대상 타입 (1=article, 2=reply)',
-	relId INT(10) NOT NULL
+	relId INT(10) NOT NULL,
+	`point` INT(10) NOT NULL
 );
+
+# 댓글 테이블 생성
+CREATE TABLE replies(
+      id INT(10) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+      regDate DATETIME NOT NULL,
+      updateDate DATETIME NOT NULL,
+      memberId INT(10) NOT NULL,
+      articleId INT(10) NOT NULL,
+      `body` TEXT NOT NULL,
+      `like` INT(10) NOT NULL DEFAULT 0
+);
+
+# 댓글 테스트 데이터 생성
+INSERT INTO replies
+SET regDate = NOW(),
+updateDate = NOW(),
+memberId = 1,
+articleId = 1,
+`body` = '댓글1';
+
+INSERT INTO replies
+SET regDate = NOW(),
+updateDate = NOW(),
+memberId = 1,
+articleId = 1,
+`body` = '댓글2';
+
+INSERT INTO replies
+SET regDate = NOW(),
+updateDate = NOW(),
+memberId = 1,
+articleId = 1,
+`body` = '댓글3';
+
 
 ###(INIT 끝)
 ##########################################
@@ -165,10 +198,8 @@ SELECT *
 FROM article
 ORDER BY id DESC;
 
-
 SELECT *
 FROM board;
-
 
 SELECT *
 FROM `member`;
@@ -176,6 +207,8 @@ FROM `member`;
 SELECT *
 FROM likes;
 
+SELECT *
+FROM replies;
 
 ###############################################################################
 

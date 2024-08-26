@@ -15,11 +15,13 @@ import com.example.demo.service.ArticleService;
 import com.example.demo.service.BoardService;
 import com.example.demo.service.LikeService;
 import com.example.demo.service.MemberService;
+import com.example.demo.service.ReplyService;
 import com.example.demo.util.Ut;
 import com.example.demo.vo.Article;
 import com.example.demo.vo.Board;
 import com.example.demo.vo.Likes;
 import com.example.demo.vo.Member;
+import com.example.demo.vo.Reply;
 import com.example.demo.vo.ResultData;
 
 import jakarta.servlet.http.HttpSession;
@@ -35,6 +37,8 @@ public class UsrArticleController {
 	private BoardService boardService;
 	@Autowired
 	private LikeService likeService;
+	@Autowired
+	private ReplyService replyService;
 	
 	@RequestMapping("/usr/article/doLikeArticle")
 	@ResponseBody
@@ -103,7 +107,7 @@ public class UsrArticleController {
 			if(!toggled) {
 				return ResultData.from("S-3", "싫어요 갱신 성공 : 일반", "newDislikeInfo", newDislikeInfo);
 			} else {
-				return ResultData.from("S-4", "싫어요 갱신 성공 : 토글", "newLikeInfo", newDislikeInfo);
+				return ResultData.from("S-4", "싫어요 갱신 성공 : 토글", "newDislikeInfo", newDislikeInfo);
 			}
 		}
 	}
@@ -128,6 +132,15 @@ public class UsrArticleController {
 		
 		if(httpSession.getAttribute("loginedMemberId") != null) {
 			model = setLoginInfoBySessionId(httpSession, model, article);
+		}
+		
+		//댓글
+		List<Reply> replies = replyService.getRepliesByArticleId(id);
+		
+		if(replies.isEmpty()) {
+			model.addAttribute("noneReply", true);
+		} else {
+			model.addAttribute("replies", replies);
 		}
 		
 		model.addAttribute("article", article);

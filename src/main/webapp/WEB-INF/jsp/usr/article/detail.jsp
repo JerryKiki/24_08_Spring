@@ -144,12 +144,43 @@
 						<span id="dislikeIcon-${article.id}">DISLIKE ▼</span>
 					</c:when>
 					<c:otherwise>
-						<span id="dislikeIcon-${article.id}">DISLIKE▽</span>
+						<span id="dislikeIcon-${article.id}">DISLIKE ▽</span>
 					</c:otherwise>
 				</c:choose>
 			</div>
 		</div>
 	</c:if>
+	
+	<div class="replies mx-auto w-3/4" style="margin-top: 20px;">
+		<div style="text-align: left; font-size: 1.2rem">▶ 댓글</div>
+		<table class="table table-fixed border-collapse mx-auto" style="background-color: white; font-family: 'Pretendard-Regular'; font-size: 1rem; font-weight: bold;">
+			<thead style="font-size: 1rem; font-weight: bold;">
+				<tr>
+					<th style="text-align: center;">Nickname</th>
+					<th style="text-align: center;">Registration Date</th>
+					<th style="text-align: center;">Body</th>
+					<th style="text-align: center;">Popularity</th>
+				</tr>
+			</thead>
+			<tbody>
+				<c:if test="${!noneReply}">
+					<c:forEach var="reply" items="${replies}">
+						<tr class="hover">
+							<td style="text-align: center;">${reply.nickname}</td>
+							<td style="text-align: center;">${reply.regDate.substring(0,10)}</td>
+							<td style="text-align: center;">${reply.body }</td>
+							<td style="text-align: center;">${reply.like }</td>
+						</tr>
+					</c:forEach>
+				</c:if>
+				<c:if test="${noneReply}">
+					<tr>
+						<td colspan='4' style="text-align: center;">아직 댓글이 없습니다.</td>
+					</tr>
+				</c:if>
+			</tbody>
+		</table>
+	</div>
 	
 <%-- 	<c:if test="${!canAccess }"> --%>
 <%-- 		<c:choose> --%>
@@ -161,6 +192,21 @@
 <%-- 			</c:otherwise> --%>
 <%-- 		</c:choose> --%>
 <%-- 	</c:if> --%>
+	
+	<c:if test="${isLogined}">
+		<div class="makeReply mx-auto" style="margin-top: 30px;">
+			<div style="text-align: left">▶ Make Reply</div>
+			<form onsubmit="replyForm__submit(this); return false;" style="font-size: 1.4rem;" action="../reply/writeReply" class="flex justify-center items-center">
+				<input type="hidden" value="${article.id }" name="articleId" />
+				<div>
+					<input class="input input-bordered input-sm" type="text" autocomplete="off" name="body" style="margin: 0 10px"/>
+				</div>
+				<div>
+					<input style="cursor: pointer; background-color:#36BA98; color: white; padding: 2px 10px; border-radius: 10px; font-size:1.2rem;" type="submit" value="등록">
+				</div>
+			</form>
+		</div>
+	</c:if>
 	
 	<br />
 	
