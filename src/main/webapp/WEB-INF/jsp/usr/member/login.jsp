@@ -4,6 +4,9 @@
 <%@ include file="../common/head.jspf"%>
 
 	<form onsubmit="LoginForm__submit(this); return false;" style="font-size: 1.5rem;" action="doLogin">
+		<c:if test="${gotUrl }">
+		<input type="hidden" value="${url }" name="url" />
+		</c:if>
 		<div style="margin-bottom: 10px;">
 			<label>아이디 : </label>
 			<input type="text" name="loginId"/>
@@ -19,7 +22,7 @@
 	
 	<br />
 	
-	<div><button onclick="history.back();">▶ 뒤로가기</button></div>
+	<div><button onclick="location.href = document.referrer;">▶ 뒤로가기</button></div>
 
 
 <%@ include file="../common/foot.jspf"%>

@@ -87,7 +87,9 @@
 	            } else if (data.resultCode.startsWith('F-2')) {
 	                alert('자신의 게시글에는 좋아요할 수 없습니다.');
 	            } else if (data.resultCode.startsWith('F-A')) {
-	                alert('로그인 후 이용해주세요.');
+	                confirm('로그인 후 이용 가능합니다. 로그인 하시겠습니까?');
+	                //로그인 페이지에 현재 페이지의 정보를 포함해서 보내기
+	                location.href = "../member/doLogin?url=" + encodeURIComponent(window.location.href); //암호화까지!
 	            }
 	        }, 'json').fail(function(jqXHR, textStatus, errorThrown) {
 	            console.error('AJAX request failed:', textStatus, errorThrown);

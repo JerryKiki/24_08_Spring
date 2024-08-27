@@ -41,7 +41,7 @@ public class UsrMemberController {
 	}
 
 	@RequestMapping("/usr/member/doLogin")
-	public String doLogin(HttpSession httpSession, Model model, String loginId, String loginPw) {
+	public String doLogin(HttpSession httpSession, Model model, String loginId, String loginPw, String url) {
 
 		boolean alreadyLogined = false;
 		boolean memberNotExists = false;
@@ -52,6 +52,11 @@ public class UsrMemberController {
 			alreadyLogined = true;
 			model.addAttribute("alreadyLogined", alreadyLogined);
 			return "/usr/alert";
+		}
+		
+		if(url != null) {
+			model.addAttribute("gotUrl", true);
+			model.addAttribute("url", url);
 		}
 		
 		if(loginId == null && loginPw == null) {

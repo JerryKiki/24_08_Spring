@@ -37,7 +37,13 @@
 		<script>alert('비밀번호가 틀립니다.'); history.back();</script>
 	</c:if>
 	<c:if test="${loginSuccess}">
-		<script>alert('로그인 성공!'); location.replace('/');</script>
+		<script>alert('로그인 성공!');</script>
+		<c:if test="${gotUrl }">
+			<script>location.href = "${url}"</script>
+		</c:if>
+		<c:if test="${!gotUrl }">
+			<script>location.replace('/')</script>
+		</c:if>
 	</c:if>
 	<c:if test="${alreadyLogouted}">
 		<script>alert('이미 로그아웃 상태입니다.'); history.back();</script>
