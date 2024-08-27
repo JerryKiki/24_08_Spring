@@ -33,5 +33,12 @@ public class ReplyService {
 	public Reply getReplyById(int id) {
 		return replyRepository.getReplyById(id);
 	}
+
+	public ResultData doDeleteReply(int id) {
+		
+		replyRepository.doDeleteReply(id);
+		
+		return ResultData.from("S-1", "삭제 성공");
+	}
 	
 }

@@ -38,5 +38,38 @@ public class UsrReplyController {
 		
 		return ResultData.newData(writeReplyRd, "newReply", newReply);
 	}
+	
+//	@RequestMapping("/usr/reply/modifyReply")
+//	public ResultData modifyReply(int memberId, int articleId, String body) {
+//		
+//		ResultData writeReplyRd = replyService.writeReply(memberId, articleId, body);
+//		int lastInsertedReplyId = replyService.getLastInsertId();
+//		
+//		Reply newReply = replyService.getReplyById(lastInsertedReplyId);
+//		
+//		return ResultData.newData(writeReplyRd, "newReply", newReply);
+//	}
+	
+	@RequestMapping("/usr/reply/deleteReply")
+	@ResponseBody
+	public ResultData deleteReply(int id, int memberId, HttpSession httpSession) {
+		
+		//로그인체크
+		if(httpSession.getAttribute("loginedMemberid") == null) { //로그인 체크
+			return ResultData.from("F-A", "로그인 후 이용하세요.");
+		}
+		
+		//Reply 권한체크
+		Reply thisReply = replyService.getReplyById(id);
+		if(thisReply.getMemberId() != memberId) {
+			return ResultData.from("F-1", "해당 댓글에 대한 권한이 없습니다.");
+		}
+		
+		//실제 삭제
+		ResultData deleteReplyRd = replyService.doDeleteReply(id);
+		
+		//데이터 전송
+		return deleteReplyRd;
+	}
 
 }

@@ -20,6 +20,7 @@ public class Article {
 	private String code;
 	private int view;
 	private int like;
+	private int replyNum;
 }
 	
 //	public String toString() {

@@ -24,53 +24,86 @@
 	</insert>
 
 	<select id="getArticles" resultType="Article">
-		SELECT A.*, M.nickname
+		SELECT
+			A.*,
+			M.nickname,
+			IFNULL(RC.replyNum, 0) AS replyNum
 		FROM article A
 		INNER JOIN `member` M
 		ON A.author = M.id
+		LEFT JOIN (SELECT
+			articleId,
+			COUNT(*) AS replyNum
+		FROM replies
+		GROUP BY articleId) RC
+		ON A.id = RC.articleId
 		<if test="boardId != -1">WHERE A.boardId = #{boardId}</if>
 		ORDER BY A.id DESC;
 	</select>
 
 	<select id="getArticleById" resultType="Article">
-		SELECT A.*, M.nickname
+		SELECT A.*, M.nickname, IFNULL(RC.replyNum, 0) AS replyNum
 		FROM article A
 		INNER JOIN `member` M
 		ON A.author = M.id
+		LEFT JOIN (SELECT
+			articleId,
+			COUNT(*) AS replyNum
+		FROM replies
+		GROUP BY articleId) RC
+		ON A.id = RC.articleId
 		WHERE A.id = #{id}
 	</select>
 	
 	<select id="getArticlesByPage">
-		SELECT A.*, M.nickname, B.`code`
+		SELECT A.*, M.nickname, B.`code`, IFNULL(RC.replyNum, 0) AS replyNum
 		FROM article A
 		INNER JOIN `member` M
 		ON A.author = M.id
 		INNER JOIN `board` B
 		ON A.boardId = B.id
+		LEFT JOIN (SELECT
+			articleId,
+			COUNT(*) AS replyNum
+		FROM replies
+		GROUP BY articleId) RC
+		ON A.id = RC.articleId
 		<if test="boardId != -1">WHERE A.boardId = #{boardId}</if>
 		ORDER BY id DESC 
 		LIMIT ${limitFrom}, ${limitTake}
 	</select>
 	
 	<select id="getSearchedArticles">
-		SELECT A.*, M.nickname, B.`code`
+		SELECT A.*, M.nickname, B.`code`, IFNULL(RC.replyNum, 0) AS replyNum
 		FROM article A
 		INNER JOIN `member` M
 		ON A.author = M.id
 		INNER JOIN `board` B
 		ON A.boardId = B.id
+		LEFT JOIN (SELECT
+			articleId,
+			COUNT(*) AS replyNum
+		FROM replies
+		GROUP BY articleId) RC
+		ON A.id = RC.articleId
 		WHERE ${searchItem} LIKE #{searchKeyword}
 		<if test="boardId != -1">AND A.boardId = #{boardId}</if>
 		ORDER BY id DESC
 	</select>
 	
 	<select id="getSearchedArticlesByPage">
-		SELECT A.*, M.nickname, B.`code`
+		SELECT A.*, M.nickname, B.`code`, IFNULL(RC.replyNum, 0) AS replyNum
 		FROM article A
 		INNER JOIN `member` M
 		ON A.author = M.id
 		INNER JOIN `board` B
 		ON A.boardId = B.id
+		LEFT JOIN (SELECT
+			articleId,
+			COUNT(*) AS replyNum
+		FROM replies
+		GROUP BY articleId) RC
+		ON A.id = RC.articleId
 		WHERE ${searchItem} LIKE #{searchKeyword}
 		<if test="boardId != -1">AND A.boardId = #{boardId}</if>
 		ORDER BY id DESC 

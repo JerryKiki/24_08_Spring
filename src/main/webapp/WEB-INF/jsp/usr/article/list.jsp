@@ -107,7 +107,7 @@
 					<td style="text-align: center;">${article.id}</td>
 					<td style="text-align: center;">${article.regDate.substring(0,10)}</td>
 					<td style="text-align: center;">${article.code }</td>
-					<td style="text-align: center;"><a href="getArticle?id=${article.id}">${article.title}</a></td>
+					<td style="text-align: center;"><a href="getArticle?id=${article.id}">${article.title} [${article.replyNum}]</a></td>
 					<td style="text-align: center;">${article.nickname}</td>
 					<td style="text-align: center;">${article.view}</td>
 					<td style="text-align: center;" id="likeCount-${article.id}">${article.like}</td>

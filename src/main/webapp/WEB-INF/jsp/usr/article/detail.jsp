@@ -131,7 +131,7 @@
 	            return;
 	        }
 	
-	        // submit대신 ajax로 새로고침요청
+	        // submit대신 ajax로 controller에 전송한 후 새로고침
 	        ReloadPage__After__MakeReply(articleId, memberId, body);
 	    }
 	
@@ -200,9 +200,17 @@
 		    const $tdRegDate = $('<td>').css('text-align', 'center').text(reply.regDate.substring(0, 10));
 		    const $tdBody = $('<td>').css('text-align', 'center').text(reply.body);
 		    const $tdLike = $('<td>').css('text-align', 'center').text(reply.like);
+		 	
+		    // 수정 링크를 생성
+		    const $tdModify = $('<td>').css('text-align', 'center')
+		        .append($('<a>').attr('href', 'modifyReply?id=' + reply.id).text('수정'));
+
+		    // 삭제 링크를 생성
+		    const $tdDelete = $('<td>').css('text-align', 'center')
+		        .append($('<a>').attr('href', 'deleteReply?id=' + reply.id).text('삭제'));
 
 		    // td 요소를 tr에 추가
-		    $tr.append($tdNickname, $tdRegDate, $tdBody, $tdLike);
+		    $tr.append($tdNickname, $tdRegDate, $tdBody, $tdLike, $tdModify, $tdDelete);
 		    
 		    // tr 요소를 tbody에 추가
 		    $tbody.append($tr);
@@ -216,6 +224,26 @@
 			
 			$bodyInput.val('');
 		}
+	</script>
+	
+	<script>
+	function doDeleteReply(replyId, memberId) {
+	    $.get('../reply/deleteReply', {
+	        id: replyId,
+	        memberId: memberId,
+	        ajaxMode: 'Y'
+	    }, function(data) {
+	        console.log(data);
+	        console.log(data.data1);
+	        
+	        //여기 수정해야됨!!!!
+	        if(data.resultCode.startsWith('F-')) {
+	        	alert(data.msg);
+	        } else if(data.resultCode == 'S-1') {
+	        	alert("삭제되었습니다.")
+	        }
+	    }, 'json');
+	}
 	</script>
 	
 	<div class="details">
@@ -270,6 +298,8 @@
 					<th style="text-align: center;">Registration Date</th>
 					<th style="text-align: center;">Body</th>
 					<th style="text-align: center;">Popularity</th>
+					<th style="text-align: center;">Modify</th>
+					<th style="text-align: center;">Delete</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -280,6 +310,8 @@
 							<td style="text-align: center;">${reply.regDate.substring(0,10)}</td>
 							<td style="text-align: center;">${reply.body }</td>
 							<td style="text-align: center;">${reply.like }</td>
+							<td style="text-align: center;"><a href="#" onclick="doModifyReply('${reply.id}', '${loginedMember.id}'); return false;">수정</a></td>
+							<td style="text-align: center;"><a href="#" onclick="doDeleteReply('${reply.id}', '${loginedMember.id}'); return false;">삭제</a></td>
 						</tr>
 					</c:forEach>
 				</c:if>
