@@ -22,34 +22,34 @@
                 const dislikeIcon = $(`#dislikeIcon-` + articleId);
                 
                 if(data.resultCode == 'S-1') {
-                	 if (newInfo.hasOwnProperty(articleId)) {
+                    if (newInfo.hasOwnProperty(articleId)) {
                         likeIcon.text('♥');
-                      } else {
-                      	likeIcon.text('♡');
-                      }
+                    } else {
+                        likeIcon.text('♡');
+                    }
                 } else if(data.resultCode == 'S-2') {
-                	if (newInfo.hasOwnProperty(articleId)) {
+                    if (newInfo.hasOwnProperty(articleId)) {
                         likeIcon.text('♥');
                         dislikeIcon.text('▽');
-                     } else {
-                     	likeIcon.text('♡');
-                     	dislikeIcon.text('▼');
-                     }
+                    } else {
+                        likeIcon.text('♡');
+                        dislikeIcon.text('▼');
+                    }
                 } else if(data.resultCode == 'S-3') {
-                	if (newInfo.hasOwnProperty(articleId)) {
-                		dislikeIcon.text('▼');
-                	} else {
-                		dislikeIcon.text('▽');
-                	}
+                    if (newInfo.hasOwnProperty(articleId)) {
+                        dislikeIcon.text('▼');
+                    } else {
+                        dislikeIcon.text('▽');
+                    }
                 } else if(data.resultCode == 'S-4') {
-                	if (newInfo.hasOwnProperty(articleId)) {
-                		dislikeIcon.text('▼');
-                		likeIcon.text('♡');
-                	} else {
-                		dislikeIcon.text('▽');
-                		likeIcon.text('♥');
-                	}
-                }              
+                    if (newInfo.hasOwnProperty(articleId)) {
+                        dislikeIcon.text('▼');
+                        likeIcon.text('♡');
+                    } else {
+                        dislikeIcon.text('▽');
+                        likeIcon.text('♥');
+                    }
+                }
                 ArticleList__doUpdateLikeCount(articleId);
             } else if (data.resultCode.startsWith('F-1')) {
                 alert('존재하지 않는 게시글입니다.');
@@ -65,15 +65,15 @@
     }
     
     function ArticleList__doUpdateLikeCount(articleId) {
-    	$.get('../article/doGetLikeCount', {
-    		id: articleId,
-    		ajaxMode: 'Y'
-    	}, function(data) {
-    		console.log(data)
-    		const likeCount = data;
-    		$(`#likeCount-` + articleId).text(likeCount);
-    		
-    	}, 'json')
+        $.get('../article/doGetLikeCount', {
+            id: articleId,
+            ajaxMode: 'Y'
+        }, function(data) {
+            console.log(data);
+            const likeCount = data;
+            $(`#likeCount-` + articleId).text(likeCount);
+            
+        }); // 닫는 괄호 추가
     }
 </script>
 
@@ -82,7 +82,7 @@
 	</c:if>
 	<div style="margin-right: auto; margin-bottom: 10px; font-size: 1.2rem;">전체 게시글 수 : ${totalCount }개</div>
 
-	<table class="table-fixed border-collapse w-full border-2" style="border-color: #36BA98;">
+	<table class="border-collapse w-full border-2" style="border-color: #36BA98;">
 		<thead>
 			<tr>
 				<th style="text-align: center;">ID</th>

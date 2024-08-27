@@ -95,5 +95,4 @@ public class Ut {
 		}
 		return true;
 	}
-		
 }
