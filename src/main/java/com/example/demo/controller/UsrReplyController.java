@@ -55,14 +55,19 @@ public class UsrReplyController {
 	public ResultData deleteReply(int id, int memberId, HttpSession httpSession) {
 		
 		//로그인체크
-		if(httpSession.getAttribute("loginedMemberid") == null) { //로그인 체크
+		if(httpSession.getAttribute("loginedMemberId") == null) { //로그인 체크
 			return ResultData.from("F-A", "로그인 후 이용하세요.");
 		}
 		
 		//Reply 권한체크
 		Reply thisReply = replyService.getReplyById(id);
+		
+		if(thisReply == null) {
+			return ResultData.from("F-1", "존재하지 않는 댓글입니다.");
+		}
+		
 		if(thisReply.getMemberId() != memberId) {
-			return ResultData.from("F-1", "해당 댓글에 대한 권한이 없습니다.");
+			return ResultData.from("F-2", "해당 댓글에 대한 권한이 없습니다.");
 		}
 		
 		//실제 삭제

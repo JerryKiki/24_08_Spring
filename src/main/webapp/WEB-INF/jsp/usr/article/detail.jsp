@@ -227,22 +227,25 @@
 	</script>
 	
 	<script>
-	function doDeleteReply(replyId, memberId) {
-	    $.get('../reply/deleteReply', {
-	        id: replyId,
-	        memberId: memberId,
-	        ajaxMode: 'Y'
-	    }, function(data) {
-	        console.log(data);
-	        console.log(data.data1);
-	        
-	        //여기 수정해야됨!!!!
-	        if(data.resultCode.startsWith('F-')) {
-	        	alert(data.msg);
-	        } else if(data.resultCode == 'S-1') {
-	        	alert("삭제되었습니다.")
-	        }
-	    }, 'json');
+	function doDeleteReply(replyId, memberId, reply) {
+		if(confirm("삭제하시겠습니까?")) {
+		    $.get('../reply/deleteReply', {
+		        id: replyId,
+		        memberId: memberId,
+		        ajaxMode: 'Y'
+		    }, function(data) {
+		        console.log(data);
+		        console.log(data.data1);
+		        
+		        if(data.resultCode.startsWith('F-')) {
+		        	alert(data.msg);
+		        } else if(data.resultCode == 'S-1') {
+		        	alert("삭제되었습니다.")
+		        	// 삭제 버튼의 td 요소를 포함하는 tr을 삭제
+	                $(reply).closest('tr').remove();
+		        }
+		    }, 'json');
+		}
 	}
 	</script>
 	
@@ -260,8 +263,8 @@
 	
 	<c:if test="${canAccess }">
 		<ul class="can-access-menu flex items-center flex-row mx-auto" style="font-size: 1.2rem;">
-			<li><a href="doModify?id=${article.id }">수정</a></li>
-			<li><a href="doDelete?id=${article.id }">삭제</a></li>
+			<li><a href="javascript:void(0);" onclick="if(confirm('수정하시겠습니까?')) window.location.href='doModify?id=${article.id}';">수정</a></li>
+			<li><a href="javascript:void(0);" onclick="if(confirm('삭제하시겠습니까?')) window.location.href='doDelete?id=${article.id}';">삭제</a></li>
 		</ul>
 	</c:if>
 	<c:if test="${!canAccess }">
@@ -310,14 +313,14 @@
 							<td style="text-align: center;">${reply.regDate.substring(0,10)}</td>
 							<td style="text-align: center;">${reply.body }</td>
 							<td style="text-align: center;">${reply.like }</td>
-							<td style="text-align: center;"><a href="#" onclick="doModifyReply('${reply.id}', '${loginedMember.id}'); return false;">수정</a></td>
-							<td style="text-align: center;"><a href="#" onclick="doDeleteReply('${reply.id}', '${loginedMember.id}'); return false;">삭제</a></td>
+							<td style="text-align: center;"><a href="#" onclick="doModifyReply('${reply.id}', '${loginedMember.id}', this); return false;">수정</a></td>
+							<td style="text-align: center;"><a href="#" onclick="doDeleteReply('${reply.id}', '${loginedMember.id}', this); return false;">삭제</a></td>
 						</tr>
 					</c:forEach>
 				</c:if>
 				<c:if test="${noneReply}">
 					<tr>
-						<td class="no_reply_row" colspan='4' style="text-align: center;">아직 댓글이 없습니다.</td>
+						<td class="no_reply_row" colspan='6' style="text-align: center;">아직 댓글이 없습니다.</td>
 					</tr>
 				</c:if>
 			</tbody>
