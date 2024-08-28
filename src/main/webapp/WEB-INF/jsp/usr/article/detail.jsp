@@ -6,11 +6,13 @@
 	<!-- JS -->
 	
 	<!-- <iframe src="http://localhost:8080/usr/article/doIncreaseHitCount?id=757" frameborder="0"></iframe> -->
+	<!-- 파라미터 -->
 	<script>
 	    const params = {};
 	    params.id = parseInt('${param.id}');
 	</script>
 	
+	<!-- 조회수 -->
 	<script>
 	    function ArticleDetail__doIncreaseViewCount() {
 	        const localStorageKey = 'article__' + params.id + '__alreadyOnView';
@@ -37,6 +39,7 @@
 	    });
 	</script>
 	
+	<!-- 좋아요/싫어요 -->
 	<script>
 	    function ArticleList__doUpdateAfterLike(articleId, likePoint) {
 	        $.get('../article/doLikeArticle', {
@@ -110,52 +113,17 @@
 	        }, 'json'); // 세미콜론 추가
 	    }
 	</script>
-	
-	<script>
-	    function replyForm__submit(form) {
-	        console.log("form.articleId.value : " + form.articleId.value);
-	        console.log("form.memberId.value : " + form.memberId.value);
-	        console.log("form.body.value : " + form.body.value);
-	
-	        let articleId = form.articleId.value;
-	        let memberId = form.memberId.value;
-	        let body = form.body.value.trim();
-	
-	        if (isNaN(memberId)) { // isNaN을 사용해야 합니다.
-	            alert('로그인 후 이용할 수 있습니다.');
-	            return;
-	        }
-	
-	        if (body.length == 0) {
-	            alert('내용을 입력하세요.');
-	            return;
-	        }
-	
-	        // submit대신 ajax로 controller에 전송한 후 새로고침
-	        ReloadPage__After__MakeReply(articleId, memberId, body);
-	    }
-	
-	    function ReloadPage__After__MakeReply(articleId, memberId, body) {
-	        $.get('../reply/writeReply', {
-	            articleId: articleId,
-	            memberId: memberId,
-	            body: body,
-	            ajaxMode: 'Y'
-	        }, function(data) {
-	            console.log(data);
-	            console.log(data.data1);
-	            location.reload();
-	        }, 'json'); // 세미콜론 추가
-	    }
-	</script>
 
+	<!-- 댓글 작성 -->
 	<script>
 		function replyForm__submit(form) {
-			console.log("form.articleId.value : " + form.articleId.value);
+			console.log("form.relId.value : " + form.relTypeCode.value);
+			console.log("form.relId.value : " + form.relId.value);
 			console.log("form.memberId.value : " + form.memberId.value);
 			console.log("form.body.value : " + form.body.value);
 			
-			let articleId = form.articleId.value;
+			let relTypeCode = form.relTypeCode.value;
+			let relId = form.relId.value;
 			let memberId = form.memberId.value;
 			let body = form.body.value.trim();
 			
@@ -170,12 +138,13 @@
 			}
 			
 			//submit대신 ajax로 새로고침요청
-			ReloadPage__After__MakeReply(articleId, memberId, body);
+			ReloadPage__After__MakeReply(relTypeCode, relId, memberId, body);
 		}
 		
-		function ReloadPage__After__MakeReply(articleId, memberId, body) {
+		function ReloadPage__After__MakeReply(relTypeCode, relId, memberId, body) {
 		    $.get('../reply/writeReply', {
-		        articleId: articleId,
+		    	relTypeCode: relTypeCode,
+		    	relId: relId,
 		        memberId: memberId,
 		        body: body,
 		        ajaxMode: 'Y'
@@ -199,15 +168,22 @@
 		    const $tdNickname = $('<td>').css('text-align', 'center').text(reply.nickname);
 		    const $tdRegDate = $('<td>').css('text-align', 'center').text(reply.regDate.substring(0, 10));
 		    const $tdBody = $('<td>').css('text-align', 'center').text(reply.body);
+		    $tdBody.attr('id', 'replyBody-' + reply.id);
 		    const $tdLike = $('<td>').css('text-align', 'center').text(reply.like);
 		 	
-		    // 수정 링크를 생성
-		    const $tdModify = $('<td>').css('text-align', 'center')
-		        .append($('<a>').attr('href', 'modifyReply?id=' + reply.id).text('수정'));
+		 // 수정 링크를 생성
+	        const modifyHref = 'acitveModifyForm(' + reply.id + ', \'${loginedMemberId}\', this); return false;';
+	        const $tdModify = $('<td>').css('text-align', 'center')
+	            .append($('<a>').attr('href', '#')
+	            .attr('onclick', modifyHref)
+	            .text('수정'));
 
-		    // 삭제 링크를 생성
-		    const $tdDelete = $('<td>').css('text-align', 'center')
-		        .append($('<a>').attr('href', 'deleteReply?id=' + reply.id).text('삭제'));
+	        // 삭제 링크를 생성
+	        const deleteHref = 'doDeleteReply(' + reply.id + ', \'${loginedMemberId}\', this); return false;';
+	        const $tdDelete = $('<td>').css('text-align', 'center')
+	            .append($('<a>').attr('href', '#')
+	            .attr('onclick', deleteHref)
+	            .text('삭제'));
 
 		    // td 요소를 tr에 추가
 		    $tr.append($tdNickname, $tdRegDate, $tdBody, $tdLike, $tdModify, $tdDelete);
@@ -215,8 +191,8 @@
 		    // tr 요소를 tbody에 추가
 		    $tbody.append($tr);
 
-		    // no_reply_row 클래스를 가진 행이 존재하면 제거
-		    $tbody.find('.no_reply_row').remove();
+		    // no_reply_row 클래스를 가진 행이 존재하면 삭제
+		    $('.repliesTable').find('.no_reply_row').remove();
 		}
 		
 		function initFormBody() {
@@ -226,26 +202,116 @@
 		}
 	</script>
 	
+	<!-- 댓글삭제 -->
 	<script>
 	function doDeleteReply(replyId, memberId, reply) {
-		if(confirm("삭제하시겠습니까?")) {
-		    $.get('../reply/deleteReply', {
-		        id: replyId,
-		        memberId: memberId,
-		        ajaxMode: 'Y'
-		    }, function(data) {
-		        console.log(data);
-		        console.log(data.data1);
-		        
-		        if(data.resultCode.startsWith('F-')) {
-		        	alert(data.msg);
-		        } else if(data.resultCode == 'S-1') {
-		        	alert("삭제되었습니다.")
-		        	// 삭제 버튼의 td 요소를 포함하는 tr을 삭제
+	    if (confirm("삭제하시겠습니까?")) {
+	        $.get('../reply/deleteReply', {
+	            id: replyId,
+	            memberId: memberId,
+	            ajaxMode: 'Y'
+	        }, function(data) {
+	            console.log(data);
+	            console.log(data.data1);
+	
+	            if (data.resultCode.startsWith('F-')) {
+	                alert(data.msg);
+	            } else if (data.resultCode === 'S-1') {
+	                alert("삭제되었습니다.");
+	                // 삭제 버튼의 td 요소를 포함하는 tr을 삭제
 	                $(reply).closest('tr').remove();
-		        }
-		    }, 'json');
+	                
+	                // tbody 요소 선택
+	                const $tbody = $('.repliesTable tbody');
+	                
+	                // tbody에 tr 요소가 하나도 남아있지 않으면 "아직 댓글이 없습니다." 메시지 추가
+	                if ($tbody.find('tr').length === 0) {
+	                    const $noReplyRow = $('<tr>').attr('class', 'no_reply_row')
+	                        	.append($('<td>')
+	                            .attr('colspan', '6')
+	                            .css('text-align', 'center')
+	                            .text('아직 댓글이 없습니다.')
+	                        );
+	                    $tbody.append($noReplyRow);
+	                }
+	            }
+	        }, 'json');
+	    }
+	}
+	</script>
+
+	
+	<!-- 댓글수정 -->
+	<script>
+	function acitveModifyForm(replyId, memberId, reply) {
+	    let modifyForm = document.modifyReplyForm;
+	    let $modifyReply = $('.modifyReply');
+	    let $currentRow = $(reply).closest('tr');
+	    
+	    // 현재 열려 있는 수정 폼이 현재 댓글의 폼이 아닌 경우 초기화
+	    if (!$modifyReply.hasClass('hidden') && modifyForm.id.value != replyId) {
+	        initAndHideModifyForm(); // 기존 폼을 숨기고 초기화
+	    }
+	    
+	    // 현재 댓글의 폼이 숨겨져 있는 경우
+	    if ($modifyReply.hasClass('hidden')) {
+	        modifyForm.id.value = replyId;
+	        modifyForm.memberId.value = memberId;
+	        $currentRow.addClass('modifing');
+	        $modifyReply.removeClass('hidden');
+	    } else {
+	        // 이미 수정 폼이 보이는 상태에서 동일 버튼 클릭 시 폼을 숨깁니다.
+	        modifyForm.id.value = 0;
+	        modifyForm.body.value = '';
+	        $currentRow.removeClass('modifing');
+	        $modifyReply.addClass('hidden');
+	    }
+	}
+	
+	function modifyForm__submit(form) {
+		console.log("form.id.value : " + form.id.value);
+		console.log("form.memberId.value : " + form.memberId.value);
+		console.log("form.body.value : " + form.body.value);
+		
+		let replyId = form.id.value;
+		let memberId = form.memberId.value;
+		let body = form.body.value.trim();
+		
+		if(isNaN(memberId)) {
+			alert('로그인 후 이용할 수 있습니다.');
+			return;
 		}
+		
+		if(body.length == 0) {
+			alert('내용을 입력하세요.');
+			return;
+		}
+		
+		//submit대신 ajax로 새로고침요청
+		ReloadPage__After__ModifyReply(replyId, memberId, body);
+	}
+	
+	function ReloadPage__After__ModifyReply(replyId, memberId, body) {
+	    $.get('../reply/modifyReply', {
+	    	id: replyId,
+	        memberId: memberId,
+	        body: body,
+	        ajaxMode: 'Y'
+	    }, function(data) {
+	        console.log(data);
+	        console.log(data.data1);
+	        const modifiedReply = data.data1;
+	        $('#replyBody-' + replyId).text(modifiedReply.body);
+	        initAndHideModifyForm();
+	    }, 'json');
+	}
+	
+	function initAndHideModifyForm() {
+		let modifyForm = document.modifyReplyForm;
+		modifyForm.id.value = 0;
+		modifyForm.body.value = '';
+		$('.modifyReply').toggleClass('hidden');
+		$('tr.modifing').removeClass('modifing');	
 	}
 	</script>
 	
@@ -294,7 +360,7 @@
 	
 	<div class="replies mx-auto w-3/4" style="margin-top: 20px;">
 		<div style="text-align: left; font-size: 1.2rem">▶ 댓글</div>
-		<table class="table table-fixed border-collapse mx-auto" style="background-color: white; font-family: 'Pretendard-Regular'; font-size: 1rem; font-weight: bold;">
+		<table class="repliesTable table table-fixed border-collapse mx-auto" style="background-color: white; font-family: 'Pretendard-Regular'; font-size: 1rem; font-weight: bold;">
 			<thead style="font-size: 1rem; font-weight: bold;">
 				<tr>
 					<th style="text-align: center;">Nickname</th>
@@ -311,16 +377,18 @@
 						<tr class="hover">
 							<td style="text-align: center;">${reply.nickname}</td>
 							<td style="text-align: center;">${reply.regDate.substring(0,10)}</td>
-							<td style="text-align: center;">${reply.body }</td>
+							<td style="text-align: center;" id="replyBody-${reply.id }">${reply.body }</td>
 							<td style="text-align: center;">${reply.like }</td>
-							<td style="text-align: center;"><a href="#" onclick="doModifyReply('${reply.id}', '${loginedMember.id}', this); return false;">수정</a></td>
-							<td style="text-align: center;"><a href="#" onclick="doDeleteReply('${reply.id}', '${loginedMember.id}', this); return false;">삭제</a></td>
+							<c:if test="${reply.memberId == loginedMember.id }">
+								<td style="text-align: center;"><a href="#" onclick="acitveModifyForm('${reply.id}', '${loginedMember.id}', this); return false;">수정</a></td>
+								<td style="text-align: center;"><a href="#" onclick="doDeleteReply('${reply.id}', '${loginedMember.id}', this); return false;">삭제</a></td>
+							</c:if>
 						</tr>
 					</c:forEach>
 				</c:if>
 				<c:if test="${noneReply}">
-					<tr>
-						<td class="no_reply_row" colspan='6' style="text-align: center;">아직 댓글이 없습니다.</td>
+					<tr class="no_reply_row" >
+						<td colspan='6' style="text-align: center;">아직 댓글이 없습니다.</td>
 					</tr>
 				</c:if>
 			</tbody>
@@ -337,12 +405,23 @@
 <%-- 			</c:otherwise> --%>
 <%-- 		</c:choose> --%>
 <%-- 	</c:if> --%>
+
+	<div class="modifyReply mx-auto w-3/4 hidden" style="margin-top: 30px;">
+		<div style="text-align: left">▶ Modify Reply</div>
+		<form name="modifyReplyForm" onsubmit="modifyForm__submit(this); return false;" style="font-size: 1.4rem; width: 100%;" action="../reply/writeReply" class="flex justify-center items-center">
+			<input type="hidden" value="0" name="id" />
+			<input type="hidden" value="${loginedMember.id }" name="memberId" />
+			<input class="reply_body_input input input-bordered input-sm" type="text" autocomplete="off" name="body" style="margin: 0 10px; width: 100%"/>
+			<input style="cursor: pointer; background-color:#36BA98; color: white; padding: 2px 10px; border-radius: 10px; font-size:1.2rem;" type="submit" value="수정">
+		</form>
+	</div>
 	
 	<c:if test="${isLogined}">
 		<div class="makeReply mx-auto w-3/4" style="margin-top: 30px;">
 			<div style="text-align: left">▶ Make Reply</div>
 			<form onsubmit="replyForm__submit(this); return false;" style="font-size: 1.4rem; width: 100%;" action="../reply/writeReply" class="flex justify-center items-center">
-				<input type="hidden" value="${article.id }" name="articleId" />
+				<input type="hidden" value="1" name="relTypeCode" />
+				<input type="hidden" value="${article.id }" name="relId" />
 				<input type="hidden" value="${loginedMember.id }" name="memberId" />
 				<input class="reply_body_input input input-bordered input-sm" type="text" autocomplete="off" name="body" style="margin: 0 10px; width: 100%"/>
 				<input style="cursor: pointer; background-color:#36BA98; color: white; padding: 2px 10px; border-radius: 10px; font-size:1.2rem;" type="submit" value="등록">
@@ -377,6 +456,11 @@
 	.details {
 		font-size: 1.5rem;
 		color: #36BA98;
+	}
+	
+	tr.modifing {
+		color: #FF4E88;
+		text-decoration: underline;
 	}
 	
 	</style>

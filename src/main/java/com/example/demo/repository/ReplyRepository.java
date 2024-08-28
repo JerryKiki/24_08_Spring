@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import com.example.demo.vo.Reply;
 
@@ -17,7 +18,7 @@ public interface ReplyRepository {
 			FROM replies R
 			INNER JOIN `member` M
 			ON R.memberId = M.id
-			WHERE R.articleId = #{articleId}
+			WHERE R.relId = #{articleId} AND R.relTypeCode = 1
 			""")
 	public List<Reply> getRepliesByArticleId(int articleId);
 
@@ -26,10 +27,11 @@ public interface ReplyRepository {
 			SET regDate = NOW(),
 			updateDate = NOW(),
 			memberId = #{memberId},
-			articleId = #{articleId},
+			relTypeCode = #{relTypeCode},
+			relId = #{relId},
 			`body` = #{body}
 			""")
-	public void writeReply(int memberId, int articleId, String body);
+	public void writeReply(int memberId, int relTypeCode, int relId, String body);
 	
 	@Select("SELECT LAST_INSERT_ID();")
 	public int getLastInsertId();
@@ -45,4 +47,7 @@ public interface ReplyRepository {
 
 	@Delete("DELETE FROM replies WHERE id = #{id}")
 	public void doDeleteReply(int id);
+
+	@Update("UPDATE replies SET updateDate = NOW(), `body` = #{body} WHERE id = #{id}")
+	public int doModifyReply(int id, String body);
 }

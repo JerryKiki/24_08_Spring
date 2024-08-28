@@ -13,7 +13,8 @@ public class Reply {
 	private String regDate;
 	private String updateDate;
 	private int memberId;
-	private int articleId;
+	private int relTypeCode;
+	private int relId;
 	private String body;
 	private int like;
 	private String nickname;

@@ -32,11 +32,12 @@
 		INNER JOIN `member` M
 		ON A.author = M.id
 		LEFT JOIN (SELECT
-			articleId,
+			relId,
 			COUNT(*) AS replyNum
 		FROM replies
-		GROUP BY articleId) RC
-		ON A.id = RC.articleId
+		WHERE relTypeCode = 1
+		GROUP BY relId) RC
+		ON A.id = RC.relId
 		<if test="boardId != -1">WHERE A.boardId = #{boardId}</if>
 		ORDER BY A.id DESC;
 	</select>
@@ -47,11 +48,12 @@
 		INNER JOIN `member` M
 		ON A.author = M.id
 		LEFT JOIN (SELECT
-			articleId,
+			relId,
 			COUNT(*) AS replyNum
 		FROM replies
-		GROUP BY articleId) RC
-		ON A.id = RC.articleId
+		WHERE relTypeCode = 1
+		GROUP BY relId) RC
+		ON A.id = RC.relId
 		WHERE A.id = #{id}
 	</select>
 	
@@ -63,11 +65,12 @@
 		INNER JOIN `board` B
 		ON A.boardId = B.id
 		LEFT JOIN (SELECT
-			articleId,
+			relId,
 			COUNT(*) AS replyNum
 		FROM replies
-		GROUP BY articleId) RC
-		ON A.id = RC.articleId
+		WHERE relTypeCode = 1
+		GROUP BY relId) RC
+		ON A.id = RC.relId
 		<if test="boardId != -1">WHERE A.boardId = #{boardId}</if>
 		ORDER BY id DESC 
 		LIMIT ${limitFrom}, ${limitTake}
@@ -81,11 +84,12 @@
 		INNER JOIN `board` B
 		ON A.boardId = B.id
 		LEFT JOIN (SELECT
-			articleId,
+			relId,
 			COUNT(*) AS replyNum
 		FROM replies
-		GROUP BY articleId) RC
-		ON A.id = RC.articleId
+		WHERE relTypeCode = 1
+		GROUP BY relId) RC
+		ON A.id = RC.relId
 		WHERE ${searchItem} LIKE #{searchKeyword}
 		<if test="boardId != -1">AND A.boardId = #{boardId}</if>
 		ORDER BY id DESC
@@ -99,11 +103,12 @@
 		INNER JOIN `board` B
 		ON A.boardId = B.id
 		LEFT JOIN (SELECT
-			articleId,
+			relId,
 			COUNT(*) AS replyNum
 		FROM replies
-		GROUP BY articleId) RC
-		ON A.id = RC.articleId
+		WHERE relTypeCode = 1
+		GROUP BY relId) RC
+		ON A.id = RC.relId
 		WHERE ${searchItem} LIKE #{searchKeyword}
 		<if test="boardId != -1">AND A.boardId = #{boardId}</if>
 		ORDER BY id DESC 

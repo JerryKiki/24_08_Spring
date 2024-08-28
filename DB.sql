@@ -164,7 +164,8 @@ CREATE TABLE replies(
       regDate DATETIME NOT NULL,
       updateDate DATETIME NOT NULL,
       memberId INT(10) NOT NULL,
-      articleId INT(10) NOT NULL,
+      relTypeCode INT(10) UNSIGNED NOT NULL COMMENT '대상 타입 (1=article, 2=reply)',
+      relId INT(10) NOT NULL,
       `body` TEXT NOT NULL,
       `like` INT(10) NOT NULL DEFAULT 0
 );
@@ -174,21 +175,24 @@ INSERT INTO replies
 SET regDate = NOW(),
 updateDate = NOW(),
 memberId = 1,
-articleId = 1,
+relTypeCode = 1,
+relId = 1,
 `body` = '댓글1';
 
 INSERT INTO replies
 SET regDate = NOW(),
 updateDate = NOW(),
 memberId = 1,
-articleId = 1,
+relTypeCode = 1,
+relId = 1,
 `body` = '댓글2';
 
 INSERT INTO replies
 SET regDate = NOW(),
 updateDate = NOW(),
 memberId = 1,
-articleId = 1,
+relTypeCode = 1,
+relId = 1,
 `body` = '댓글3';
 
 
@@ -209,6 +213,38 @@ FROM likes;
 
 SELECT *
 FROM replies;
+
+SELECT
+	A.*,
+	M.nickname,
+	IFNULL(RC.replyNum, 0) AS replyNum
+FROM article A
+INNER JOIN `member` M
+ON A.author = M.id
+LEFT JOIN (SELECT
+	articleId,
+	COUNT(*) AS replyNum
+FROM replies
+GROUP BY articleId) RC
+ON A.id = RC.articleId
+ORDER BY A.id DESC;
+
+SELECT A.*, M.nickname, B.`code`, IFNULL(RC.replyNum, 0) AS replyNum
+FROM article A
+INNER JOIN `member` M
+ON A.author = M.id
+INNER JOIN `board` B
+ON A.boardId = B.id
+LEFT JOIN (SELECT
+	articleId,
+	COUNT(*) AS replyNum
+	FROM replies
+	GROUP BY articleId) RC
+ON A.id = RC.articleId
+WHERE nickname LIKE '%리키%' 
+ORDER BY id DESC
+LIMIT 0, 1;
+
 
 ###############################################################################
 

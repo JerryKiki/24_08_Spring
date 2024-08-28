@@ -29,9 +29,9 @@ public class UsrReplyController {
 
 	@RequestMapping("/usr/reply/writeReply")
 	@ResponseBody
-	public ResultData writeReply(int memberId, int articleId, String body) {
+	public ResultData writeReply(int memberId, int relTypeCode, int relId, String body) {
 		
-		ResultData writeReplyRd = replyService.writeReply(memberId, articleId, body);
+		ResultData writeReplyRd = replyService.writeReply(memberId, relTypeCode, relId, body);
 		int lastInsertedReplyId = replyService.getLastInsertId();
 		
 		Reply newReply = replyService.getReplyById(lastInsertedReplyId);
@@ -75,6 +75,33 @@ public class UsrReplyController {
 		
 		//데이터 전송
 		return deleteReplyRd;
+	}
+	
+	@RequestMapping("/usr/reply/modifyReply")
+	@ResponseBody
+	public ResultData modifyReply(int id, int memberId, String body, HttpSession httpSession) {
+		
+		//로그인체크
+		if(httpSession.getAttribute("loginedMemberId") == null) { //로그인 체크
+			return ResultData.from("F-A", "로그인 후 이용하세요.");
+		}
+		
+		//Reply 권한체크
+		Reply thisReply = replyService.getReplyById(id);
+		
+		if(thisReply == null) {
+			return ResultData.from("F-1", "존재하지 않는 댓글입니다.");
+		}
+		
+		if(thisReply.getMemberId() != memberId) {
+			return ResultData.from("F-2", "해당 댓글에 대한 권한이 없습니다.");
+		}
+		
+		//실제 수정
+		ResultData modifyReplyRd = replyService.doModifyReply(id, body);
+		
+		//데이터 전송
+		return modifyReplyRd;
 	}
 
 }
