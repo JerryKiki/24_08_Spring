@@ -2,6 +2,7 @@ package com.example.demo.repository;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import com.example.demo.vo.Member;
 
@@ -24,5 +25,28 @@ public interface MemberRepository {
 	public Member getMemberByLoginId(String loginId);
 
 	public Member getMemberByNameAndEmail(String name, String email);
+
+	@Update("""
+			UPDATE `member`
+			SET updateDate = NOW(),
+			`name` = #{name},
+			nickname = #{nickname},
+			cellphoneNum = #{cellphoneNum},
+			email = #{email}
+			WHERE id = #{memberId}
+			""")
+	public int updateInfoExceptPw(int memberId, String name, String nickname, String cellphoneNum, String email);
+
+	@Update("""
+			UPDATE `member`
+			SET updateDate = NOW(),
+			loginPw = #{loginPw},
+			`name` = #{name},
+			nickname = #{nickname},
+			cellphoneNum = #{cellphoneNum},
+			email = #{email}
+			WHERE id = #{memberId}
+			""")
+	public int updateInfoWithPw(int memberId, String loginPw, String name, String nickname, String cellphoneNum, String email);
 
 }

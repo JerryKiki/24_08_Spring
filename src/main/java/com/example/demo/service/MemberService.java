@@ -56,6 +56,14 @@ public class MemberService {
 	public Member getMemberById(int id) {
 		return memberRepository.getMemberById(id);
 	}
+
+	public int updateInfoExceptPw(int memberId, String name, String nickname, String cellphoneNum, String email) {
+		return memberRepository.updateInfoExceptPw(memberId, name, nickname, cellphoneNum, email);
+	}
+	
+	public int updateInfoWithPw(int memberId, String loginPw, String name, String nickname, String cellphoneNum, String email) {
+		return memberRepository.updateInfoWithPw(memberId, loginPw, name, nickname, cellphoneNum, email);
+	}
 }
 
 //@Service

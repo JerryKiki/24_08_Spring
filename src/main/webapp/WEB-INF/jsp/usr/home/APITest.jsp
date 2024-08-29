@@ -3,7 +3,7 @@
 <c:set var="pageTitle" value="API TEST"></c:set>
 
 <script>
-	const API_KEY = '깃허브 업로드를 위해 삭제';
+	const API_KEY = 'NBJLmbGR6AOKmvVZ%2BcqCdwIBnzAw3c70Q6ec393sEEWOmwp5p6OiS4hHSPMieQy9V9AkWaEb9mrqGmEgbIl%2FQQ%3D%3D';
 	
 	async function getCData() {
 		const url = 'https://api.odcloud.kr/api/15075891/v1/uddi:7cc7242f-7fd2-446a-8889-826404107afb?page=1&perPage=10&serviceKey='+ API_KEY;

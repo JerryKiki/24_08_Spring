@@ -1,5 +1,7 @@
 package com.example.demo.controller;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -123,6 +125,78 @@ public class UsrMemberController {
 		joinSuccess = true;
 		model.addAttribute("joinSuccess", joinSuccess);
 		return "/usr/alert";
+	}
+	
+	@RequestMapping("/usr/member/myPage")
+	public String viewMyPage(HttpSession httpSession, Model model) {
+		
+		if(httpSession.getAttribute("loginedMemberId") == null) {
+			model.addAttribute("isntLogined", true);
+			return "/usr/alert";
+		}
+		
+		model = setLoginInfoBySessionId(httpSession, model);
+		
+		return "/usr/member/myPage";
+	}
+	
+	@RequestMapping("/usr/member/confirmPw")
+	public String confirmPw(HttpSession httpSession, Model model) {
+
+		model = setLoginInfoBySessionId(httpSession, model);
+			
+		return "/usr/member/confirmPw";
+	}
+
+	@RequestMapping("/usr/member/memberModify")
+	public String doModifyMember(HttpSession httpSession, Model model, int memberId, String confirmPw) {
+		
+		if(httpSession.getAttribute("loginedMemberId") == null) {
+			model.addAttribute("isntLogined", true);
+			return "/usr/alert";
+		}
+		
+		Member loginedMember = memberService.getMemberById(memberId);
+		
+		if(!confirmPw.equals(loginedMember.getLoginPw())) {
+			model.addAttribute("pwMismatch", true);
+			return "/usr/alert";
+		}
+		
+		model = setLoginInfoBySessionId(httpSession, model);
+		
+		return "/usr/member/memberModify";
+	}
+	
+	@RequestMapping("/usr/member/doUpdateMemberInfo")
+	public String doUpdateMemberInfo(Model model, int memberId, String loginPw, String loginPwConfirm, String name, String nickname, String cellphoneNum, String email) {
+		
+		int rs = 0;
+		
+		if(loginPw.isEmpty() || loginPw == null) {
+			rs = memberService.updateInfoExceptPw(memberId, name, nickname, cellphoneNum, email);
+		} else {
+			rs = memberService.updateInfoWithPw(memberId, loginPw, name, nickname, cellphoneNum, email);
+		}
+		
+		if(rs == 1) {
+			model.addAttribute("memberInfoModified", true);
+			return "/usr/alert";
+		} else {
+			model.addAttribute("memberInfoModifyFailed", true);
+			return "/usr/alert";
+		}
+		
+	}
+	
+	public Model setLoginInfoBySessionId(HttpSession httpSession, Model model) {
+		int loginedMemberId = (int) httpSession.getAttribute("loginedMemberId");
+		Member loginedMember = memberService.getMemberById(loginedMemberId);
+		
+		model.addAttribute("isLogined", true);
+		model.addAttribute("loginedMember", loginedMember);
+		
+		return model;
 	}
 }
 
