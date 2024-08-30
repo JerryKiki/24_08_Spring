@@ -178,9 +178,10 @@
 		</div>
 	</c:if>
 
-	
+	<!-- 게시글 작성 버튼 -->
 	<div><button onclick="location.replace('doWrite');">게시글 작성</button></div>
 	
+	<!-- 검색 -->
 	<div class="search mx-auto" style="margin-top: 30px;">
 		<div style="text-align: left">▶ Search On This Board</div>
 		<form onsubmit="searchForm__submit(this); return false;" style="font-size: 1.4rem;" action="getArticles" class="flex justify-center items-center">

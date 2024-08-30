@@ -2,8 +2,10 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <c:set var="pageTitle" value="게시글 작성"></c:set>
 <%@ include file="../common/head.jspf"%>
+<%@ include file="../common/toastUiEditorLib.jspf"%>
 	
-	<form onsubmit="wirteForm__submit(this); return false;" style="font-size: 1.5rem;" action="doWrite">
+	<form onsubmit="wirteForm__submit(this); return false;" style="font-size: 1.5rem;" action="doWrite" method="POST">
+		<input type="hidden" name="body" />
 		<div>
 			<label>게시판 : </label>
 			<select name="boardId" id="board">
@@ -18,8 +20,9 @@
 			<input type="text" autocomplete="off" name="title"/>
 		</div>
 		<div>
-			<label>내용 : </label>
-			<input type="text" autocomplete="off" name="body"/>
+			<div class="toast-ui-editor" style="background-color:white;">
+				<script type="text/x-template"></script>
+			</div>
 		</div>
 		<div>
 			<input style="cursor: pointer; background-color:#36BA98; color: white; padding: 5px 20px; margin-top: 20px; border-radius: 10px;" type="submit" value="작성">
@@ -60,12 +63,14 @@
 				return;
 			}
 			
-			if(body.length == 0) {
+			const editor = $(form).find('.toast-ui-editor').data('data-toast-editor');
+			const markdown = editor.getMarkdown().trim();
+			if (markdown.length == 0) {
 				alert('내용을 입력하세요.');
 				return;
 			}
 			
-			//다 확인했으면 그냥 여기서 submit
+			form.body.value = markdown;
 			form.submit();
 		}
 	

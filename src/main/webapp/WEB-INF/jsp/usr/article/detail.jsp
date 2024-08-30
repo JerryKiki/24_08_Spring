@@ -2,6 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <c:set var="pageTitle" value="${article.id }번 게시글 상세"></c:set>
 <%@ include file="../common/head.jspf"%>
+<%@ include file="../common/toastUiEditorLib.jspf"%>
 
 	<!-- JS -->
 	
@@ -319,7 +320,10 @@
 		<div>번호 : ${article.id }</div>
 		<div>날짜 : ${article.regDate.substring(0,10) }</div>
 		<div>제목 : ${article.title }</div>
-		<div>내용 : ${article.body }</div>
+		<div>▼ 내용 ▼</div>
+		<div class="toast-ui-viewer" style="background-color:white; border-radius: 10px; padding: 10px; border: 2px solid #36BA98">
+			<script type="text/x-template">${article.body}</script>
+		</div>
 		<div>작성자 : ${article.nickname }</div>
 		<div><span class="article-detail__view-count">조회수 : ${article.view }</span></div>
 		<div><span id="likeCount-${article.id}">좋아요 : ${article.like }</span></div>

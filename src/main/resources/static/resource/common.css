@@ -84,3 +84,7 @@ header .board_menu > ul > li {
 header .board_menu:hover > ul {
 	display: block;
 }
+
+.toastui-editor-contents {
+	text-align: center;
+}

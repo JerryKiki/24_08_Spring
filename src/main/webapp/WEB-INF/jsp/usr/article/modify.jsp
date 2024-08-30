@@ -2,18 +2,17 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <c:set var="pageTitle" value="${Oldarticle.id }번 게시글 수정"></c:set>
 <%@ include file="../common/head.jspf"%>
+<%@ include file="../common/toastUiEditorLib.jspf"%>
 	
 	<form onsubmit="modifyForm__submit(this); return false;" style="font-size: 1.5rem;" action="doModify">
 		<input type="hidden" value="${Oldarticle.id }" name="id" />
-		<div>
-			<div>기존 제목 : ${Oldarticle.title }</div>
-			<label>새 제목 : </label>
-			<input type="text" name="title"/>
+		<input type="hidden" value="${Oldarticle.body }" name="body" />
+		<div style="margin-bottom: 10px;">
+			<label>제목 : </label>
+			<input class="input input-bordered input-sm" style="font-size: 1.2rem;" type="text" name="title" value="${Oldarticle.title}"/>
 		</div>
-		<div>
-		<div>기존 내용 : ${Oldarticle.body }</div>
-		<label>새 내용 : </label>
-		<input type="text" name="body"/>
+		<div class="toast-ui-editor" style="background-color: white; border-radius: 10px;">
+			<script type="text/x-template">${Oldarticle.body}</script>
 		</div>
 		<div>
 			<input style="cursor: pointer; background-color:#36BA98; color: white; padding: 5px 10px; margin-top: 20px; border-radius: 10px;" type="submit" value="수정 완료">
@@ -40,14 +39,17 @@
 			console.log("form.body.value : " + form.body.value);
 			
 			let title = form.title.value.trim();
-			let body = form.body.value.trim();
+			const editor = $(form).find('.toast-ui-editor').data('data-toast-editor');
+			const markdown = editor.getMarkdown().trim();
+			form.body.value = markdown;
+			let body = form.body.value;
 
 			if(title.length == 0 && body.length == 0) {
 				alert('title과 body 둘 중 하나는 입력해야 합니다.');
+				editor.focus();
 				return;
 			}
 			
-			//다 확인했으면 그냥 여기서 submit
 			form.submit();
 		}
 	
