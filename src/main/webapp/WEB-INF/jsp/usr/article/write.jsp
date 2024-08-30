@@ -17,7 +17,7 @@
 		</div>
 		<div style="margin-bottom: 10px;">
 			<label>제목 : </label>
-			<input type="text" autocomplete="off" name="title"/>
+			<input class="input input-bordered input-sm" type="text" autocomplete="off" name="title"/>
 		</div>
 		<div>
 			<div class="toast-ui-editor" style="background-color:white;">

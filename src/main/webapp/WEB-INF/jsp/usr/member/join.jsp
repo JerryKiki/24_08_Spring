@@ -87,7 +87,7 @@
 			isAjax : 'Y',
 			loginId : form.loginId.value
 		}, function(data) {
-			$('.checkDup-msg').html('<div class="mt-2">' + data.msg + '</div>')
+			$('.checkDup-msg').html('<div class="">' + data.msg + '</div>')
 			if (data.success) {
 				validLoginId = data.data1;
 			} else {
@@ -95,39 +95,40 @@
 			}
 		}, 'json');
 	}
-	const checkLoginIdDupDebounced = _.debounce(checkLoginIdDup, 600);
+// 	checkLoginIdDup(); // 매번 실행
+	const checkLoginIdDupDebounced = _.debounce(checkLoginIdDup, 600); // 실행 빈도 조절
 	
 	</script>
 
 	<form onsubmit="JoinForm__submit(this); return false;" style="font-size: 1.5rem;" action="doJoin" method="POST">
 		<div style="margin-bottom: 5px;">
 			<label>아이디 : </label>
-			<input onkeyup="checkLoginIdDupDebounced(this);" type="text" autocomplete="off" name="loginId"/>
+			<input class="input input-bordered input-sm" onkeyup="checkLoginIdDupDebounced(this);" type="text" autocomplete="off" name="loginId"/>
 		</div>
 		<div style="margin-bottom: 10px;" class="checkDup-msg"></div>
 		<div style="margin-bottom: 10px;">
 			<label>비밀번호 : </label>
-			<input type="password" autocomplete="off" name="loginPw"/>
+			<input class="input input-bordered input-sm" type="password" autocomplete="off" name="loginPw"/>
 		</div>
 		<div style="margin-bottom: 10px;">
 			<label>비밀번호 확인 : </label>
-			<input type="password" autocomplete="off" name="loginPwConfirm"/>
+			<input class="input input-bordered input-sm" type="password" autocomplete="off" name="loginPwConfirm"/>
 		</div>
 		<div style="margin-bottom: 10px;">
 			<label>이름 : </label>
-			<input type="text" autocomplete="off" name="name"/>
+			<input class="input input-bordered input-sm" type="text" autocomplete="off" name="name"/>
 		</div>
 		<div style="margin-bottom: 10px;">
 			<label>닉네임 : </label>
-			<input type="text" autocomplete="off" name="nickname"/>
+			<input class="input input-bordered input-sm" type="text" autocomplete="off" name="nickname"/>
 		</div>
 		<div style="margin-bottom: 10px;">
 			<label>휴대폰번호 : </label>
-			<input type="tel" autocomplete="off" name="cellphoneNum" pattern="[0-9]{3}-[0-9]{4}-[0-9]{4}" required/>
+			<input class="input input-bordered input-sm" type="tel" autocomplete="off" name="cellphoneNum" pattern="[0-9]{3}-[0-9]{4}-[0-9]{4}" required/>
 		</div>
 		<div style="margin-bottom: 10px;">
 			<label>이메일 : </label>
-			<input type="email" autocomplete="off" name="email"/>
+			<input class="input input-bordered input-sm" type="email" autocomplete="off" name="email"/>
 		</div>
 		<div>
 			<input style="cursor: pointer; background-color:#36BA98; color: white; padding: 5px 10px; margin-top: 20px; border-radius: 10px;" type="submit" value="회원가입">
