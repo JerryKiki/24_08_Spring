@@ -3,11 +3,108 @@
 <c:set var="pageTitle" value="JOIN"></c:set>
 <%@ include file="../common/head.jspf"%>
 
-	<form onsubmit="JoinForm__submit(this); return false;" style="font-size: 1.5rem;" action="doJoin">
-		<div style="margin-bottom: 10px;">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
+	<!-- JS -->
+	<script>
+	let validLoginId = "";
+	function JoinForm__submit(form) {
+		console.log("form.loginId.value : " + form.loginId.value);
+		console.log("form.loginPw.value : " + form.loginPw.value);
+		console.log("form.loginPwConfirm.value : " + form.loginPwConfirm.value);
+		console.log("form.name.value : " + form.name.value);
+		console.log("form.nickname.value : " + form.nickname.value);
+		console.log("form.cellphoneNum.value : " + form.cellphoneNum.value);
+		console.log("form.email.value : " + form.email.value);
+		
+		let loginId = form.loginId.value.trim();
+		let loginPw = form.loginPw.value.trim();
+		let loginPwConfirm = form.loginPwConfirm.value.trim();
+		let name = form.name.value.trim();
+		let nickname = form.nickname.value.trim();
+		let cellphoneNum = form.cellphoneNum.value.trim();
+		let email = form.email.value.trim();
+		
+		if(loginId.length == 0) {
+			alert('아이디를 입력해주세요.');
+			return;
+		}
+		if (form.loginId.value != validLoginId) {
+			alert('사용할 수 없는 아이디입니다.');
+			form.loginId.focus();
+			return;
+		}
+		if (validLoginId == form.loginId.value) {
+			return;
+		}
+		if(loginPw.length == 0) {
+			alert('비밀번호를 입력해주세요.');
+			return;
+		}
+		if(loginPwConfirm.length == 0) {
+			alert('비밀번호 확인을 입력해주세요.');
+			return;
+		}
+		
+		if(loginPw != loginPwConfirm) {
+			alert('비밀번호가 일치하지 않습니다.');
+			form.loginPw.focus();
+			return;
+		}
+		
+		if(name.length == 0) {
+			alert('이름을 입력해주세요.');
+			return;
+		}
+		
+		if(nickname.length == 0) {
+			alert('닉네임을 입력해주세요.');
+			return;
+		}
+		
+		if(cellphoneNum.length == 0) {
+			alert('휴대폰 번호를 입력해주세요.');
+			return;
+		}
+		
+		if(email.length == 0) {
+			alert('이메일을 입력해주세요.');
+			return;
+		}
+		
+		//다 확인했으면 그냥 여기서 submit
+		submitJoinFormDone = true;
+		form.submit();
+	}
+	
+	function checkLoginIdDup(el) {
+		$('.checkDup-msg').empty();
+		const form = $(el).closest('form').get(0);
+		if (form.loginId.value.length == 0) {
+			validLoginId = '';
+			return;
+		}
+		$.get('../member/getLoginIdDup', {
+			isAjax : 'Y',
+			loginId : form.loginId.value
+		}, function(data) {
+			$('.checkDup-msg').html('<div class="mt-2">' + data.msg + '</div>')
+			if (data.success) {
+				validLoginId = data.data1;
+			} else {
+				validLoginId = '';
+			}
+		}, 'json');
+	}
+	const checkLoginIdDupDebounced = _.debounce(checkLoginIdDup, 600);
+	
+	</script>
+
+	<form onsubmit="JoinForm__submit(this); return false;" style="font-size: 1.5rem;" action="doJoin" method="POST">
+		<div style="margin-bottom: 5px;">
 			<label>아이디 : </label>
-			<input type="text" autocomplete="off" name="loginId"/>
+			<input onkeyup="checkLoginIdDupDebounced(this);" type="text" autocomplete="off" name="loginId"/>
 		</div>
+		<div style="margin-bottom: 10px;" class="checkDup-msg"></div>
 		<div style="margin-bottom: 10px;">
 			<label>비밀번호 : </label>
 			<input type="password" autocomplete="off" name="loginPw"/>
@@ -44,67 +141,3 @@
 
 <%@ include file="../common/foot.jspf"%>
 
-<!-- JS -->
-	<script type="text/javascript">
-	
-	function JoinForm__submit(form) {
-		console.log("form.loginId.value : " + form.loginId.value);
-		console.log("form.loginPw.value : " + form.loginPw.value);
-		console.log("form.loginPwConfirm.value : " + form.loginPwConfirm.value);
-		console.log("form.name.value : " + form.name.value);
-		console.log("form.nickname.value : " + form.nickname.value);
-		console.log("form.cellphoneNum.value : " + form.cellphoneNum.value);
-		console.log("form.email.value : " + form.email.value);
-		
-		let loginId = form.loginId.value.trim();
-		let loginPw = form.loginPw.value.trim();
-		let loginPwConfirm = form.loginPwConfirm.value.trim();
-		let name = form.name.value.trim();
-		let nickname = form.nickname.value.trim();
-		let cellphoneNum = form.cellphoneNum.value.trim();
-		let email = form.email.value.trim();
-		
-		if(loginId.length == 0) {
-			alert('아이디를 입력해주세요');
-			return;
-		}
-		if(loginPw.length == 0) {
-			alert('비밀번호를 입력해주세요');
-			return;
-		}
-		if(loginPwConfirm.length == 0) {
-			alert('비밀번호 확인을 입력해주세요');
-			return;
-		}
-		
-		if(loginPw != loginPwConfirm) {
-			alert('비밀번호가 일치하지 않습니다.');
-			form.loginPw.focus();
-			return;
-		}
-		
-		if(name.length == 0) {
-			alert('이름을 입력해주세요');
-			return;
-		}
-		
-		if(nickname.length == 0) {
-			alert('닉네임을 입력해주세요');
-			return;
-		}
-		
-		if(cellphoneNum.length == 0) {
-			alert('휴대폰 번호를 입력해주세요');
-			return;
-		}
-		
-		if(email.length == 0) {
-			alert('이메일을 입력해주세요');
-			return;
-		}
-		
-		//다 확인했으면 그냥 여기서 submit
-		form.submit();
-	}
-	
-	</script>
