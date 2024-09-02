@@ -10,12 +10,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartRequest;
 
 import com.example.demo.service.ArticleService;
 import com.example.demo.service.BoardService;
 import com.example.demo.service.LikeService;
 import com.example.demo.service.MemberService;
 import com.example.demo.service.ReplyService;
+import com.example.demo.service.GenFileService;
 import com.example.demo.util.Ut;
 import com.example.demo.vo.Article;
 import com.example.demo.vo.Board;
@@ -39,6 +42,8 @@ public class UsrArticleController {
 	private LikeService likeService;
 	@Autowired
 	private ReplyService replyService;
+	@Autowired
+	private GenFileService genFileService;
 	
 	@RequestMapping("/usr/article/doLikeArticle")
 	@ResponseBody
@@ -275,6 +280,16 @@ public class UsrArticleController {
 		int id = (int) writeArticleRd.getData1();
 
 		Article article = articleService.getArticleById(id);
+		
+		Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
+
+		for (String fileInputName : fileMap.keySet()) {
+			MultipartFile multipartFile = fileMap.get(fileInputName);
+
+			if (multipartFile.isEmpty() == false) {
+				genFileService.save(multipartFile, id);
+			}
+		}
 		
 		writeSuccess = true;
 		model.addAttribute("writeSuccess", writeSuccess);
