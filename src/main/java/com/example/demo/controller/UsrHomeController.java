@@ -6,6 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.example.demo.service.MemberService;
+import com.example.demo.util.crawlTest;
 import com.example.demo.vo.Member;
 
 import jakarta.servlet.http.HttpSession;
@@ -32,6 +33,14 @@ public class UsrHomeController {
 	//이건 리스폰스바디가 없어야됨
 	@RequestMapping("/")
 	public String showRoot() {
+		return "redirect:/usr/home/main";
+	}
+	
+	@RequestMapping("/usr/crawl")
+	public String doCrawl() {
+
+		crawlTest.crawl();
+
 		return "redirect:/usr/home/main";
 	}
 	
