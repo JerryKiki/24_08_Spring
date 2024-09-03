@@ -281,15 +281,15 @@ public class UsrArticleController {
 
 		Article article = articleService.getArticleById(id);
 		
-		Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
-
-		for (String fileInputName : fileMap.keySet()) {
-			MultipartFile multipartFile = fileMap.get(fileInputName);
-
-			if (multipartFile.isEmpty() == false) {
-				genFileService.save(multipartFile, id);
-			}
-		}
+//		Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
+//
+//		for (String fileInputName : fileMap.keySet()) {
+//			MultipartFile multipartFile = fileMap.get(fileInputName);
+//
+//			if (multipartFile.isEmpty() == false) {
+//				genFileService.save(multipartFile, id);
+//			}
+//		}
 		
 		writeSuccess = true;
 		model.addAttribute("writeSuccess", writeSuccess);
